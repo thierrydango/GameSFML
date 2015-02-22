@@ -29,4 +29,5 @@ ompiled Object files
 
 main
 
-# Vim swap files .*.swp
+# Vim swap files
+.*.swp
