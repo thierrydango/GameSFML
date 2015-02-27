@@ -25,10 +25,6 @@ Personnage::Personnage(sf::Sprite spritePerso, sf::Texture texturePerso)
     m_puissance = 0u;
     m_resistance = 0u;
 
-    m_movingRight = false;
-    m_movingUp = false;
-    m_movingLeft = false;
-    m_movingDown = false;
 }
 
 sf::Vector2f Personnage::getPosition()
@@ -71,68 +67,58 @@ void Personnage::startClock()
     m_tempsDepuisDebutAnimation.restart();
 }
 
+void Personnage::manageEvent(sf::Event const& event)
+{
+    if ((event.type == sf::Event::KeyPressed) || (event.type == sf::Event::KeyReleased))
+    {
+//        State currentState = m_state;
+
+        switch (event.key.code)
+        {
+            case sf::Keyboard::Right:
+                m_state.m_movingRight = (event.type == sf::Event::KeyPressed);
+                break;
+
+            case sf::Keyboard::Up:
+                m_state.m_movingUp    = (event.type == sf::Event::KeyPressed);
+                break;
+
+            case sf::Keyboard::Left:
+                m_state.m_movingLeft  = (event.type == sf::Event::KeyPressed);
+                break;
+
+            case sf::Keyboard::Down:
+                m_state.m_movingDown  = (event.type == sf::Event::KeyPressed);
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
 void Personnage::networkOrientedNextStep()
 {
     //Gestion du clavier
     sf::Vector3f nextMove;
     bool moving = true;
 
-    if (!m_movingRight && sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-    {
-        m_movingRight = true;
-    }
-
-    if (!m_movingUp && sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-    {
-        m_movingUp = true;
-    }
-
-    if (!m_movingLeft && sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-    {
-        m_movingLeft = true;
-    }
-
-    if (!m_movingDown && sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-    {
-        m_movingDown = true;
-    }
-
-    if (m_movingRight && !sf::Keyboard::isKeyPressed(sf::Keyboard::Right))
-    {
-        m_movingRight = false;
-    }
-
-    if (m_movingUp && !sf::Keyboard::isKeyPressed(sf::Keyboard::Up))
-    {
-        m_movingUp = false;
-    }
-
-    if (m_movingLeft && !sf::Keyboard::isKeyPressed(sf::Keyboard::Left))
-    {
-        m_movingLeft = false;
-    }
-
-    if (m_movingDown && !sf::Keyboard::isKeyPressed(sf::Keyboard::Down))
-    {
-        m_movingDown = false;
-    }
-
-    if (m_movingUp)
+    if (m_state.m_movingUp)
     {
         nextMove += sf::Vector3f(0.0f, -1.0f, 0.0f);
     }
 
-    if (m_movingDown)
+    if (m_state.m_movingDown)
     {
         nextMove += sf::Vector3f(0.0f, 1.0f, 0.0f);
     }
 
-    if (m_movingRight)
+    if (m_state.m_movingRight)
     {
         nextMove += sf::Vector3f(1.0f, 0.0f, 0.0f);
     }
 
-    if (m_movingLeft)
+    if (m_state.m_movingLeft)
     {
         nextMove += sf::Vector3f(-1.0f, 0.0f, 0.0f);
     }

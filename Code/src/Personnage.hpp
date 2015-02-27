@@ -4,6 +4,8 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 
+#include "State.hpp"
+
 class Personnage
 {
     public:
@@ -19,6 +21,7 @@ class Personnage
 
         void startClock();
 
+        void manageEvent(sf::Event const& event);
         void networkOrientedNextStep();
         void nextStep();
 
@@ -41,6 +44,8 @@ class Personnage
         unsigned int m_direction;
         // Vecteur de projection
         sf::Vector3f m_projection;
+        // Current moving state
+        State m_state;
 
         /* Leveling du personnage */
         // Niveau du personnage

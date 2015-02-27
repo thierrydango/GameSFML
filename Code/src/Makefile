@@ -1,8 +1,8 @@
-SOURCES = formes.cpp Personnage.cpp MainSFML.cpp
+SOURCES = formes.cpp State.cpp MainSFML.cpp Personnage.cpp
 
 OBJECTS = $(SOURCES:.cpp=.o)
 TARGET = main
-LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio 
+LIBS = -lsfml-graphics -lsfml-window -lsfml-system -lsfml-audio -lsfml-network 
 CXX = g++
 
 %.o: %.cpp

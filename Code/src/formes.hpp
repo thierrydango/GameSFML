@@ -8,4 +8,6 @@ sf::RectangleShape defineRectangle(int posX, int posY, unsigned int longueur, un
 
 sf::CircleShape defineCircle(int posX, int posY, unsigned int rayon, sf::Color fillColor = sf::Color::Blue, unsigned int outlineThickness = 0, sf::Color outlineColor = sf::Color::Black);
 
+sf::ConvexShape cooldownShape(sf::Vector2f center, unsigned int demiCoteCarre, float proportion, sf::Color fillColor);
+
 #endif // FORMES_HPP
