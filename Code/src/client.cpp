@@ -11,68 +11,20 @@
 
 int main(int argc, char *argv[])
 {
-    if (argc > 1)
-    {
+    std::cout << "You are a client" << std::endl;
 
-    // Lecture de l'éventuel paramètre pour être serveur
-    if (argc > 2)
+    sf::IpAddress IPADDRESS = sf::IpAddress::getLocalAddress();
+    const unsigned short PORT = 6789;
+    sf::TcpSocket socket;
+    sf::Socket::Status status = socket.connect(IPADDRESS, PORT);
+
+    if (status != sf::Socket::Done)
     {
-        std::cout << "To be the server, good use is : ./main s" << std::endl;
+        std::cout << "Error in socket.connect(" << IPADDRESS << ", " << PORT << ")" << std::endl;
         return -1;
     }
 
-    bool isServer = false;
-    if (argc == 2)
-    {
-        if (*argv[1] == 's')
-        {
-            isServer = true;
-        }
-    }
-
-    if (isServer)
-    {
-        std::cout << "You are the server" << std::endl;
-    }
-    else
-    {
-        std::cout << "You are a client" << std::endl;
-    }
-
-    sf::IpAddress IPADDRESS = sf::IpAddress::getLocalAddress();
-    const unsigned short PORT = 5000;
-    sf::TcpSocket socket;
-    sf::Mutex globalMutex;
-
-    if (isServer)
-    {
-        sf::TcpListener listener;
-        std::cout << "Waiting for a client..." << std::endl;
-        listener.listen(PORT);
-        if (listener.accept(socket) == sf::Socket::Done)
-        {
-            std::cout << "New client connected: " << socket.getRemoteAddress() << std::endl;
-        }
-        else
-        {
-            std::cout << "Port already in use, please wait and retry" << std::endl;
-            return 0;
-        }
-    }
-
-    if (!isServer)
-    {
-        if (socket.connect(IPADDRESS, PORT) == sf::Socket::Done)
-        {
-            std::cout << "Connexion successed" << std::endl;
-        }
-        else
-        {
-            std::cout << "Erreur de connection au serveur" << std::endl;
-            return -1;
-        }
-    }
-    }
+    std::cout << "Connection succeeded" << std::endl;
 
     sf::RenderWindow window;
     sf::View view;
@@ -176,7 +128,6 @@ int main(int argc, char *argv[])
             angle = 0;
         rect.setRotation(angle*360);
 
-        std::cout << angle << std::endl;
         cooldown = cooldownShape(sf::Vector2f(150,150), 45, angle, sf::Color(0,0,255,128));
         convex.move(1u,0u);
 
