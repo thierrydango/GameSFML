@@ -86,7 +86,7 @@ int main(int argc, char *argv[])
     Personnage perso(spritePerso,texturePerso);
     sf::Vector2u anim(0, 1);
 
-    if (!texturePerso.loadFromFile("../graphics/sprites/SpriteIop01.png"))
+    if (!texturePerso.loadFromFile("graphics/sprites/SpriteIop01.png"))
     {
         std::cout << "Erreur au chargement de SpriteIop01.png" << std::endl;
     }
