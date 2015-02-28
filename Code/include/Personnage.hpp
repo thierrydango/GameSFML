@@ -3,25 +3,32 @@
 
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
+#include <SFML/Network.hpp>
 
 #include "State.hpp"
 
 class Personnage
 {
     public:
+        Personnage();
         Personnage(sf::Sprite, sf::Texture);
 
         sf::Vector2f getPosition();
         unsigned int getDirection();
         unsigned int getFrameNumber();
         unsigned int getAnimationNumber();
-        unsigned int getX();
-        unsigned int getY();
-        unsigned int getZ();
+        float getX();
+        float getY();
+        float getZ();
+        State getState();
+        void setX(float x);
+        void setY(float y);
+        void setZ(float z);
+        void setState(State s);
 
         void startClock();
 
-        void manageEvent(sf::Event const& event);
+        bool manageEvent(sf::Event const& event, sf::Packet& packet);
         void networkOrientedNextStep();
         void nextStep();
 

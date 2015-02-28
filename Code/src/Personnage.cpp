@@ -2,6 +2,12 @@
 #include "Personnage.hpp"
 #include "VectorFunctions.hpp"
 
+Personnage::Personnage()
+{
+    m_position = sf::Vector3f(50.0f, 50.0f, 0.0f);
+    m_projection = sf::Vector3f(0.0f, 0.0f, 0.0f);
+}
+
 Personnage::Personnage(sf::Sprite spritePerso, sf::Texture texturePerso)
 {
     m_spritePerso = spritePerso;
@@ -47,19 +53,44 @@ unsigned int Personnage::getAnimationNumber()
     return m_animationNumber;
 }
 
-unsigned int Personnage::getX()
+float Personnage::getX()
 {
     return m_position.x;
 }
 
-unsigned int Personnage::getY()
+float Personnage::getY()
 {
     return m_position.y;
 }
 
-unsigned int Personnage::getZ()
+float Personnage::getZ()
 {
     return m_position.z;
+}
+
+State Personnage::getState()
+{
+    return m_state;
+}
+
+void Personnage::setX(float x)
+{
+    m_position.x = x;
+}
+
+void Personnage::setY(float y)
+{
+    m_position.y = y;
+}
+
+void Personnage::setZ(float z)
+{
+    m_position.z = z;
+}
+
+void Personnage::setState(State s)
+{
+    m_state = s;
 }
 
 void Personnage::startClock()
@@ -67,11 +98,11 @@ void Personnage::startClock()
     m_tempsDepuisDebutAnimation.restart();
 }
 
-void Personnage::manageEvent(sf::Event const& event)
+bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet)
 {
     if ((event.type == sf::Event::KeyPressed) || (event.type == sf::Event::KeyReleased))
     {
-//        State currentState = m_state;
+        State currentState = m_state;
 
         switch (event.key.code)
         {
@@ -94,7 +125,21 @@ void Personnage::manageEvent(sf::Event const& event)
             default:
                 break;
         }
+
+        if (m_state != currentState)
+        {
+            // On duplique 4 fois chaque booléen de sorte que ça rentre sur 16 bits
+            //
+            // DROITE    HAUT      GAUCHE    BAS
+            // 0 1 0 0   1 1 0 0   0 1 0 1   0 0 1 0
+            unsigned short newState = ((32768+16384+8192+4096)*m_state.m_movingRight + (2048+1024+512+256)*m_state.m_movingUp + (128+64+32+16)*m_state.m_movingLeft + (8+4+2+1)*m_state.m_movingDown);
+            short posX = static_cast<short>(std::round(m_position.x));
+            short posY = static_cast<short>(std::round(m_position.y));
+            packet << newState << posX << posY;
+            return true;
+        }
     }
+    return false;
 }
 
 void Personnage::networkOrientedNextStep()

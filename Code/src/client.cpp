@@ -26,6 +26,8 @@ int main(int argc, char *argv[])
 
     std::cout << "Connection succeeded" << std::endl;
 
+    socket.setBlocking(false);
+
     sf::RenderWindow window;
     sf::View view;
     unsigned int longueurFenetre = 800;
@@ -38,12 +40,23 @@ int main(int argc, char *argv[])
     Personnage perso(spritePerso,texturePerso);
     sf::Vector2u anim(0, 1);
 
+    //Création du personnage de l'adversaire
+    sf::Sprite spriteOther;
+    sf::Texture textureOther;
+    Personnage other(spritePerso,texturePerso);
+
     if (!texturePerso.loadFromFile("graphics/sprites/SpriteIop01.png"))
     {
         std::cout << "Erreur au chargement de SpriteIop01.png" << std::endl;
     }
 
+    if (!textureOther.loadFromFile("graphics/sprites/SpriteIop01.png"))
+    {
+        std::cout << "Erreur au chargement de SpriteIop01.png" << std::endl;
+    }
+
     spritePerso.setTexture(texturePerso);
+    spriteOther.setTexture(textureOther);
 
     // Créer une fenêtre en lui donnant une taille et un nom
     window.create(sf::VideoMode(longueurFenetre ,largeurFenetre), "SFML Tutorial");
@@ -60,22 +73,6 @@ int main(int argc, char *argv[])
     std::cout << "Game launching" << std::endl;
 
     // Creation et initialisation des éléments
-    sf::CircleShape circle;
-    circle.setFillColor(sf::Color(100u,200u,50u));
-    circle.setRadius(50.0f);
-    circle.setPosition(300,300);
-    circle.setOutlineColor(sf::Color(0u,0u,0u));
-    circle.setOutlineThickness(7u);
-
-    sf::RectangleShape rect;
-    rect.setFillColor(sf::Color(255u,20u,40u));
-    rect.setSize(sf::Vector2f(200,60));
-    rect.setPosition(350,350);
-    rect.setRotation(0);
-    rect.setOutlineColor(sf::Color(0u,0u,0u));
-    rect.setOutlineThickness(7u);
-    rect.setOrigin(-48,30);
-
     sf::RectangleShape bordHorizontal;
     bordHorizontal.setFillColor(sf::Color(50u,50u,50u));
     bordHorizontal.setSize(sf::Vector2f(2000,650));
@@ -86,67 +83,71 @@ int main(int argc, char *argv[])
     bordVertical.setSize(sf::Vector2f(850,2000));
     bordVertical.setPosition(-800,-600);
 
-    sf::ConvexShape convex;
-    convex.setPointCount(5);
-    convex.setPoint(0, sf::Vector2f(300,300));
-    convex.setPoint(1, sf::Vector2f(450,320));
-    convex.setPoint(2, sf::Vector2f(420,390));
-    convex.setPoint(3, sf::Vector2f(350,440));
-    convex.setPoint(4, sf::Vector2f(280,420));
-    convex.setFillColor(sf::Color::Cyan);
-    convex.setOutlineColor(sf::Color(0u,0u,0u));
-    convex.setOutlineThickness(7u);
-
     sf::ConvexShape cooldown;
-
-    float angle = 0.0f;
+    sf::Packet packet;
 
     while (window.isOpen())
     {
+        packet.clear();
         sf::Event event;
         while (window.pollEvent(event))
         {
-            perso.manageEvent(event);
+            if (perso.manageEvent(event, packet))
+            {
+                socket.send(packet);
+            }
             if (event.type == sf::Event::Closed)
                 window.close();
         }
+
+        sf::Packet packetReceived;
+        if (socket.receive(packetReceived) == sf::Socket::Done)
+        {
+            unsigned short direction;
+            short x;
+            short y;
+            packetReceived >> direction >> x >> y;
+            std::cout << "Received : " << x << " " << y << std::endl;
+            State stateOther{direction};
+            other.setState(stateOther);
+            std::cout << "Received : " << other.getState() << std::endl;
+            other.setX(x);
+            other.setY(y);
+        }
+
         window.clear(sf::Color::White);
 
         // Gestion de la vue
         view.setCenter(sf::Vector2f(perso.getX(),perso.getY()));
 
-        //std::cout << "Position du perso : " << perso.getX() << "," << perso.getY() << std::endl;
-
+        // Positionnement du personnage
         spritePerso.setPosition(perso.getPosition());
+        spriteOther.setPosition(other.getPosition());
+
+        // Choix du bon sprite de la fiche de sprite
         spritePerso.setTextureRect(sf::IntRect(perso.getFrameNumber()*26,perso.getAnimationNumber()*59,26,59));
+        spriteOther.setTextureRect(sf::IntRect(other.getFrameNumber()*26,other.getAnimationNumber()*59,26,59));
 
         // Changer la couleur du perso
         spritePerso.setColor(sf::Color(255, 255, 255));
+        spriteOther.setColor(sf::Color(255, 100, 100));
 
-        angle = (angle+0.01);
-        if (angle >= 1)
-            angle = 0;
-        rect.setRotation(angle*360);
-
-        cooldown = cooldownShape(sf::Vector2f(150,150), 45, angle, sf::Color(0,0,255,128));
-        convex.move(1u,0u);
+        cooldown = cooldownShape(sf::Vector2f(150,150), 45, 0.625, sf::Color(0,0,255,128));
 
         //view.setCenter(sf::Vector2f(perso.getX(),perso.getY()));
         window.setView(view);
 
         // Deplacement du personnage
         perso.networkOrientedNextStep();
+        other.networkOrientedNextStep();
 
         // C'est ici qu'on dessine tout
-        window.draw(circle);
-        window.draw(rect);
         window.draw(bordHorizontal);
         window.draw(bordVertical);
-        window.draw(convex);
         window.draw(cooldown);
 
-
         window.draw(spritePerso);
+        window.draw(spriteOther);
 
         window.display();
     }

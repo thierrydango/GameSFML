@@ -55,6 +55,45 @@ int main(int argc, char *argv[])
         std::cout << "Player 2 connected: " << socketPlayer2.getRemoteAddress() << std::endl;
     }
 
+    Personnage joueur1;
+    Personnage joueur2;
 
+    sf::SocketSelector selector;
+    selector.add(socketPlayer1);
+    selector.add(socketPlayer2);
+
+    std::cout << "Both players are connected, the game starts now!" << std::endl;
+
+    while (true)
+    {
+        if (selector.wait(sf::seconds(60)))
+        {
+            sf::Packet packet;
+            if (selector.isReady(socketPlayer1))
+            {
+                socketPlayer1.receive(packet);
+                socketPlayer2.send(packet);
+                unsigned short newState;
+                short x;
+                short y;
+                packet >> newState >> x >> y;
+                std::cout << "Received " << newState << " " << x << " " << y << " from Player 1" << std::endl;
+            }
+            if (selector.isReady(socketPlayer2))
+            {
+                socketPlayer2.receive(packet);
+                socketPlayer1.send(packet);
+                short newState;
+                short x;
+                short y;
+                packet >> newState >> x >> y;
+                std::cout << "Received " << newState << " " << x << " " << y << " from Player 2" << std::endl;
+            }
+        }
+        else
+        {
+            std::cout << "No reception during the last 60 seconds..." << std::endl;
+        }
+    }
 
 }
