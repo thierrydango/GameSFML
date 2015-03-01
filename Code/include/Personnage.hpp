@@ -7,11 +7,11 @@
 
 #include "State.hpp"
 
-class Personnage
+class Personnage : public sf::Drawable
 {
     public:
         Personnage();
-        Personnage(sf::Sprite, sf::Texture);
+        Personnage(std::string const& path);
 
         sf::Vector2f getPosition();
         unsigned int getDirection();
@@ -21,6 +21,7 @@ class Personnage
         float getY();
         float getZ();
         State getState();
+        sf::Sprite& getSpritePerso();
         void setX(float x);
         void setY(float y);
         void setZ(float z);
@@ -31,6 +32,8 @@ class Personnage
         bool manageEvent(sf::Event const& event, sf::Packet& packet);
         void networkOrientedNextStep();
         void nextStep();
+
+        void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
     private:
         /* Apparence du personnage */
@@ -80,11 +83,6 @@ class Personnage
         unsigned int m_puissance;
         // Resistance du personnage
         unsigned int m_resistance;
-
-        bool m_movingRight;
-        bool m_movingUp;
-        bool m_movingLeft;
-        bool m_movingDown;
 };
 
 #endif // PERSONNAGE_HPP

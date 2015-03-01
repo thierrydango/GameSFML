@@ -28,38 +28,22 @@ int main(int argc, char *argv[])
 
     socket.setBlocking(false);
 
-    sf::RenderWindow window;
-    sf::View view;
     unsigned int longueurFenetre = 800;
     unsigned int largeurFenetre = 600;
+    sf::RenderWindow window{sf::VideoMode{longueurFenetre, largeurFenetre}, "SFML Tutorial", sf::Style::Close};
+    sf::View view;
     view.setSize(sf::Vector2f(longueurFenetre,largeurFenetre));
 
     // Création du personnage
     sf::Sprite spritePerso;
     sf::Texture texturePerso;
-    Personnage perso(spritePerso,texturePerso);
+    Personnage perso("graphics/sprites/SpriteIop01.png");
     sf::Vector2u anim(0, 1);
 
     //Création du personnage de l'adversaire
     sf::Sprite spriteOther;
     sf::Texture textureOther;
-    Personnage other(spritePerso,texturePerso);
-
-    if (!texturePerso.loadFromFile("graphics/sprites/SpriteIop01.png"))
-    {
-        std::cout << "Erreur au chargement de SpriteIop01.png" << std::endl;
-    }
-
-    if (!textureOther.loadFromFile("graphics/sprites/SpriteIop01.png"))
-    {
-        std::cout << "Erreur au chargement de SpriteIop01.png" << std::endl;
-    }
-
-    spritePerso.setTexture(texturePerso);
-    spriteOther.setTexture(textureOther);
-
-    // Créer une fenêtre en lui donnant une taille et un nom
-    window.create(sf::VideoMode(longueurFenetre ,largeurFenetre), "SFML Tutorial");
+    Personnage other("graphics/sprites/SpriteIop01.png");
 
     // Spécifier la position du bord haut gauche de la fenêtre
     window.setPosition(sf::Vector2i(0,0));
@@ -121,16 +105,16 @@ int main(int argc, char *argv[])
         view.setCenter(sf::Vector2f(perso.getX(),perso.getY()));
 
         // Positionnement du personnage
-        spritePerso.setPosition(perso.getPosition());
-        spriteOther.setPosition(other.getPosition());
+        perso.getSpritePerso().setPosition(perso.getPosition());
+        other.getSpritePerso().setPosition(other.getPosition());
 
         // Choix du bon sprite de la fiche de sprite
-        spritePerso.setTextureRect(sf::IntRect(perso.getFrameNumber()*26,perso.getAnimationNumber()*59,26,59));
-        spriteOther.setTextureRect(sf::IntRect(other.getFrameNumber()*26,other.getAnimationNumber()*59,26,59));
+        perso.getSpritePerso().setTextureRect(sf::IntRect(perso.getFrameNumber()*26,perso.getAnimationNumber()*59,26,59));
+        other.getSpritePerso().setTextureRect(sf::IntRect(other.getFrameNumber()*26,other.getAnimationNumber()*59,26,59));
 
         // Changer la couleur du perso
-        spritePerso.setColor(sf::Color(255, 255, 255));
-        spriteOther.setColor(sf::Color(255, 100, 100));
+        perso.getSpritePerso().setColor(sf::Color(255, 255, 255));
+        other.getSpritePerso().setColor(sf::Color(255, 100, 100));
 
         cooldown = cooldownShape(sf::Vector2f(150,150), 45, 0.625, sf::Color(0,0,255,128));
 
@@ -146,8 +130,8 @@ int main(int argc, char *argv[])
         window.draw(bordVertical);
         window.draw(cooldown);
 
-        window.draw(spritePerso);
-        window.draw(spriteOther);
+        window.draw(perso);
+        window.draw(other);
 
         window.display();
     }

@@ -2,35 +2,38 @@
 #include "Personnage.hpp"
 #include "VectorFunctions.hpp"
 
-Personnage::Personnage()
+Personnage::Personnage() :
+    m_position{50.0f, 50.0f, 0.0f},
+    m_projection{0.0f, 0.0f, 0.0f}
 {
-    m_position = sf::Vector3f(50.0f, 50.0f, 0.0f);
-    m_projection = sf::Vector3f(0.0f, 0.0f, 0.0f);
+
 }
 
-Personnage::Personnage(sf::Sprite spritePerso, sf::Texture texturePerso)
+Personnage::Personnage(std::string const& path) :
+    m_spritePerso{},
+    m_texturePerso{},
+    m_frameNumber{0},
+    m_animationNumber{0},
+    m_position{50.0f, 50.0f, 0.0f},
+    m_vitesse{5.0f},
+    m_rayon{15.0f},
+    m_direction{0u},
+    m_projection{0.0f, 0.0f, 0.0f},
+    m_state{},
+    m_level{1u},
+    m_xpTotale{0},
+    m_xpPourUp{120},
+    m_xpDonnee{10},
+    m_money{50},
+    m_moneyDonnee{10},
+    m_pvMax{55u},
+    m_pvActuels{55u},
+    m_puissance{0u},
+    m_resistance{0u}
 {
-    m_spritePerso = spritePerso;
-    m_texturePerso = texturePerso;
-    m_frameNumber = 0;
-    m_animationNumber = 0;
     m_tempsDepuisDebutAnimation.restart();
-    m_position = sf::Vector3f(50.0f, 50.0f, 0.0f);
-    m_vitesse = 5.0f;
-    m_rayon = 15.0f;
-    m_direction = 0u;
-    m_projection = sf::Vector3f(0.0f, 0.0f, 0.0f);
-    m_level = 1u;
-    m_xpTotale = 0;
-    m_xpPourUp = 120;
-    m_xpDonnee = 10;
-    m_money = 50;
-    m_moneyDonnee = 10;
-    m_pvMax = 55u;
-    m_pvActuels = 55u;
-    m_puissance = 0u;
-    m_resistance = 0u;
-
+    m_texturePerso.loadFromFile(path);
+    m_spritePerso.setTexture(m_texturePerso);
 }
 
 sf::Vector2f Personnage::getPosition()
@@ -71,6 +74,11 @@ float Personnage::getZ()
 State Personnage::getState()
 {
     return m_state;
+}
+
+sf::Sprite& Personnage::getSpritePerso()
+{
+    return m_spritePerso;
 }
 
 void Personnage::setX(float x)
@@ -336,4 +344,9 @@ void Personnage::nextStep()
         nextMove *= std::round(m_vitesse/normeDuDeplacement);
         m_position += nextMove;
     }
+}
+
+void Personnage::draw(sf::RenderTarget& target, sf::RenderStates states) const
+{
+    target.draw(m_spritePerso);
 }
