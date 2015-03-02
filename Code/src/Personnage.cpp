@@ -3,7 +3,7 @@
 #include "VectorFunctions.hpp"
 
 Personnage::Personnage() :
-    m_position{50.0f, 50.0f, 0.0f},
+    m_position{0.0f, 0.0f, 0.0f},
     m_projection{0.0f, 0.0f, 0.0f}
 {
 
@@ -12,9 +12,10 @@ Personnage::Personnage() :
 Personnage::Personnage(std::string const& path) :
     m_spritePerso{},
     m_texturePerso{},
+    m_dimensions{26u, 59u},
     m_frameNumber{0},
     m_animationNumber{0},
-    m_position{50.0f, 50.0f, 0.0f},
+    m_position{200.0f, 480.0f, 0.0f},
     m_vitesse{5.0f},
     m_rayon{15.0f},
     m_direction{0u},
@@ -39,6 +40,16 @@ Personnage::Personnage(std::string const& path) :
 sf::Vector2f Personnage::getPosition()
 {
     return sf::Vector2f(m_position.x, m_position.y);
+}
+
+sf::Vector2f Personnage::getDimensions()
+{
+    return m_dimensions;
+}
+
+sf::Vector2f Personnage::getOrigin()
+{
+    return sf::Vector2f(m_position.x, m_position.y) - m_dimensions/2.0f;
 }
 
 unsigned int Personnage::getDirection()
@@ -140,10 +151,11 @@ bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet)
             //
             // DROITE    HAUT      GAUCHE    BAS
             // 0 1 0 0   1 1 0 0   0 1 0 1   0 0 1 0
+            unsigned char packetType = 1;
             unsigned short newState = ((32768+16384+8192+4096)*m_state.m_movingRight + (2048+1024+512+256)*m_state.m_movingUp + (128+64+32+16)*m_state.m_movingLeft + (8+4+2+1)*m_state.m_movingDown);
             short posX = static_cast<short>(std::round(m_position.x));
             short posY = static_cast<short>(std::round(m_position.y));
-            packet << newState << posX << posY;
+            packet << packetType << newState << posX << posY;
             return true;
         }
     }
@@ -244,7 +256,28 @@ void Personnage::networkOrientedNextStep()
     if (normeDuDeplacement > 0)
     {
         nextMove *= std::round(m_vitesse/normeDuDeplacement);
-        m_position += nextMove;
+        sf::Vector3f nextPosition = m_position + nextMove;
+        if (pow(nextPosition.x/640 - 1,2) + pow(nextPosition.y/480 - 1,2) < 1)
+            m_position += nextMove;
+        else
+        {
+            if (nextPosition.x >= 640 && nextPosition.y <= 500)
+            {
+                m_position += sf::Vector3f(-3.0f,3.0f,0.0f);
+            }
+            else if (nextPosition.x < 640 && nextPosition.y <= 500)
+            {
+                m_position += sf::Vector3f(3.0f,3.0f,0.0f);
+            }
+            else if (nextPosition.x < 640 && nextPosition.y > 500)
+            {
+                m_position += sf::Vector3f(3.0f,-3.0f,0.0f);
+            }
+            else if (nextPosition.x >= 640 && nextPosition.y > 500)
+            {
+                m_position += sf::Vector3f(-3.0f,-3.0f,0.0f);
+            }
+        }
     }
 }
 

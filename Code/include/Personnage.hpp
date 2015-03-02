@@ -14,6 +14,8 @@ class Personnage : public sf::Drawable
         Personnage(std::string const& path);
 
         sf::Vector2f getPosition();
+        sf::Vector2f getDimensions();
+        sf::Vector2f getOrigin();
         unsigned int getDirection();
         unsigned int getFrameNumber();
         unsigned int getAnimationNumber();
@@ -39,6 +41,7 @@ class Personnage : public sf::Drawable
         /* Apparence du personnage */
         sf::Sprite m_spritePerso;
         sf::Texture m_texturePerso;
+        sf::Vector2f m_dimensions;
         unsigned int m_frameNumber;
         unsigned int m_animationNumber;
         sf::Clock m_tempsDepuisDebutAnimation;

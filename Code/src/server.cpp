@@ -10,23 +10,6 @@
 #include "Personnage.hpp"
 #include "formes.hpp"
 
-//auto waitForPlayer(unsigned short PORT, sf::TcpSocket& socket)
-//{
-//    sf::TcpListener listener;
-//    std::cout << "Waiting for a client..." << std::endl;
-//    listener.listen(PORT);
-//
-//    if (listener.accept(socket) == sf::Socket::Done)
-//    {
-//        std::cout << "New client connected: " << socket.getRemoteAddress() << std::endl;
-//        return socket.getRemoteAddress();
-//    }
-//    else
-//    {
-//        std::cout << "Passage dans le else de listener.accept(socket), port peut-être déjà utilisé" << std::endl;
-//    }
-//}
-
 int main(int argc, char *argv[])
 {
     std::cout << "You are the server !" << std::endl;
@@ -47,12 +30,20 @@ int main(int argc, char *argv[])
     {
         std::cout << "Player 1 connected: " << socketPlayer1.getRemoteAddress() << std::endl;
     }
+    else
+    {
+        return -1;
+    }
 
     std::cout << "Waiting for player 2..." << std::endl;
 
     if (listener.accept(socketPlayer2) == sf::Socket::Done)
     {
         std::cout << "Player 2 connected: " << socketPlayer2.getRemoteAddress() << std::endl;
+    }
+    else
+    {
+        return -1;
     }
 
     Personnage joueur1;
@@ -73,21 +64,37 @@ int main(int argc, char *argv[])
             {
                 socketPlayer1.receive(packet);
                 socketPlayer2.send(packet);
-                unsigned short newState;
-                short x;
-                short y;
-                packet >> newState >> x >> y;
-                std::cout << "Received " << newState << " " << x << " " << y << " from Player 1" << std::endl;
+                unsigned char packetType;
+                packet >> packetType;
+
+                switch (packetType)
+                {
+                    case 1:
+                        unsigned short newState;
+                        short x;
+                        short y;
+                        packet >> newState >> x >> y;
+                        std::cout << "Received " << newState << " " << x << " " << y << " from Player 1" << std::endl;
+                        break;
+                }
             }
             if (selector.isReady(socketPlayer2))
             {
                 socketPlayer2.receive(packet);
                 socketPlayer1.send(packet);
-                short newState;
-                short x;
-                short y;
-                packet >> newState >> x >> y;
-                std::cout << "Received " << newState << " " << x << " " << y << " from Player 2" << std::endl;
+                unsigned char packetType;
+                packet >> packetType;
+
+                switch (packetType)
+                {
+                    case 1:
+                        unsigned short newState;
+                        short x;
+                        short y;
+                        packet >> newState >> x >> y;
+                        std::cout << "Received " << newState << " " << x << " " << y << " from Player 2" << std::endl;
+                        break;
+                }
             }
         }
         else

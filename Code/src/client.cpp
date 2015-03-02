@@ -8,6 +8,7 @@
 #include <SFML/Network.hpp>
 #include "Personnage.hpp"
 #include "formes.hpp"
+#include "Sort.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -45,6 +46,9 @@ int main(int argc, char *argv[])
     sf::Texture textureOther;
     Personnage other("graphics/sprites/SpriteIop01.png");
 
+    // Initialiser un vecteur de sorts à afficher
+    std::vector<Sort> sorts;
+
     // Spécifier la position du bord haut gauche de la fenêtre
     window.setPosition(sf::Vector2i(0,0));
 
@@ -57,15 +61,18 @@ int main(int argc, char *argv[])
     std::cout << "Game launching" << std::endl;
 
     // Creation et initialisation des éléments
-    sf::RectangleShape bordHorizontal;
-    bordHorizontal.setFillColor(sf::Color(50u,50u,50u));
-    bordHorizontal.setSize(sf::Vector2f(2000,650));
-    bordHorizontal.setPosition(-800,-600);
+    sf::RectangleShape contour;
+    contour.setFillColor(sf::Color(50u,50u,50u));
+    contour.setSize(sf::Vector2f(3000,2000));
+    contour.setPosition(-1000,-600);
 
-    sf::RectangleShape bordVertical;
-    bordVertical.setFillColor(sf::Color(50u,50u,50u));
-    bordVertical.setSize(sf::Vector2f(850,2000));
-    bordVertical.setPosition(-800,-600);
+    sf::CircleShape ellipse;
+    ellipse.setFillColor(sf::Color(100u,100u,100u));
+    ellipse.setPointCount(100);
+    ellipse.setRadius(480);
+    ellipse.setScale(1.3333,1.0);
+    ellipse.setPosition(0,0);
+    ellipse.move(0.0,20.0);
 
     sf::ConvexShape cooldown;
     sf::Packet packet;
@@ -87,35 +94,45 @@ int main(int argc, char *argv[])
         sf::Packet packetReceived;
         if (socket.receive(packetReceived) == sf::Socket::Done)
         {
-            unsigned short direction;
-            short x;
-            short y;
-            packetReceived >> direction >> x >> y;
-            std::cout << "Received : " << x << " " << y << std::endl;
-            State stateOther{direction};
-            other.setState(stateOther);
-            std::cout << "Received : " << other.getState() << std::endl;
-            other.setX(x);
-            other.setY(y);
+            unsigned char packetType;
+            packetReceived >> packetType;
+
+            switch (packetType)
+            {
+                case 1:
+                    unsigned short direction;
+                    short x;
+                    short y;
+                    packetReceived >> direction >> x >> y;
+                    std::cout << "Received : " << x << " " << y << std::endl;
+                    State stateOther{direction};
+                    other.setState(stateOther);
+                    std::cout << "Received : " << other.getState() << std::endl;
+                    other.setX(x);
+                    other.setY(y);
+                    break;
+
+            }
         }
 
         window.clear(sf::Color::White);
 
         // Gestion de la vue
-        view.setCenter(sf::Vector2f(perso.getX(),perso.getY()));
+        view.setCenter(perso.getOrigin());
 
         // Positionnement du personnage
-        perso.getSpritePerso().setPosition(perso.getPosition());
-        other.getSpritePerso().setPosition(other.getPosition());
+        perso.getSpritePerso().setPosition(perso.getOrigin());
+        other.getSpritePerso().setPosition(other.getOrigin());
 
         // Choix du bon sprite de la fiche de sprite
         perso.getSpritePerso().setTextureRect(sf::IntRect(perso.getFrameNumber()*26,perso.getAnimationNumber()*59,26,59));
         other.getSpritePerso().setTextureRect(sf::IntRect(other.getFrameNumber()*26,other.getAnimationNumber()*59,26,59));
 
         // Changer la couleur du perso
-        perso.getSpritePerso().setColor(sf::Color(255, 255, 255));
-        other.getSpritePerso().setColor(sf::Color(255, 100, 100));
+        // perso.getSpritePerso().setColor(sf::Color(255, 255, 255));
+        // other.getSpritePerso().setColor(sf::Color(255, 100, 100));
 
+        // Gestion du cooldown
         cooldown = cooldownShape(sf::Vector2f(150,150), 45, 0.625, sf::Color(0,0,255,128));
 
         //view.setCenter(sf::Vector2f(perso.getX(),perso.getY()));
@@ -126,9 +143,9 @@ int main(int argc, char *argv[])
         other.networkOrientedNextStep();
 
         // C'est ici qu'on dessine tout
-        window.draw(bordHorizontal);
-        window.draw(bordVertical);
+        window.draw(contour);
         window.draw(cooldown);
+        window.draw(ellipse);
 
         window.draw(perso);
         window.draw(other);
