@@ -261,22 +261,13 @@ void Personnage::networkOrientedNextStep()
             m_position += nextMove;
         else
         {
-            if (nextPosition.x >= 640 && nextPosition.y <= 500)
+            while (pow(nextPosition.x/640 - 1,2) + pow(nextPosition.y/480 - 1,2) >= 1)
             {
-                m_position += sf::Vector3f(-3.0f,3.0f,0.0f);
+                sf::Vector3f recul = nextPosition - sf::Vector3f{640.0f,480.0f,0.0f};
+                recul = recul/std::sqrt(recul.x*recul.x + recul.y*recul.y + recul.z*recul.z);
+                nextPosition = nextPosition - recul;
             }
-            else if (nextPosition.x < 640 && nextPosition.y <= 500)
-            {
-                m_position += sf::Vector3f(3.0f,3.0f,0.0f);
-            }
-            else if (nextPosition.x < 640 && nextPosition.y > 500)
-            {
-                m_position += sf::Vector3f(3.0f,-3.0f,0.0f);
-            }
-            else if (nextPosition.x >= 640 && nextPosition.y > 500)
-            {
-                m_position += sf::Vector3f(-3.0f,-3.0f,0.0f);
-            }
+            m_position = nextPosition;
         }
     }
 }
