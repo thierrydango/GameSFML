@@ -70,7 +70,7 @@ int main(int argc, char *argv[])
     ellipse.setFillColor(sf::Color(100u,100u,100u));
     ellipse.setPointCount(100);
     ellipse.setRadius(480);
-    ellipse.setScale(1.3333,1.0);
+    ellipse.setScale(1.33333,1.0);
     ellipse.setPosition(0,0);
     ellipse.move(0.0,20.0);
 
