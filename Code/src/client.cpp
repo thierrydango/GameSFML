@@ -106,10 +106,10 @@ int main(int argc, char *argv[])
                     packetReceived >> direction >> x >> y;
                     std::cout << "Received : " << x << " " << y << std::endl;
                     State stateOther{direction};
-                    other.setState(stateOther);
-                    std::cout << "Received : " << other.getState() << std::endl;
-                    other.setX(x);
-                    other.setY(y);
+                    other.m_state = stateOther;
+                    std::cout << "Received : " << other.m_state << std::endl;
+                    other.m_position.x = x;
+                    other.m_position.y = y;
                     break;
 
             }
@@ -121,12 +121,12 @@ int main(int argc, char *argv[])
         view.setCenter(perso.getOrigin());
 
         // Positionnement du personnage
-        perso.getSpritePerso().setPosition(perso.getOrigin());
-        other.getSpritePerso().setPosition(other.getOrigin());
+        perso.m_spritePerso.setPosition(perso.getOrigin());
+        other.m_spritePerso.setPosition(other.getOrigin());
 
         // Choix du bon sprite de la fiche de sprite
-        perso.getSpritePerso().setTextureRect(sf::IntRect(perso.getFrameNumber()*26,perso.getAnimationNumber()*59,26,59));
-        other.getSpritePerso().setTextureRect(sf::IntRect(other.getFrameNumber()*26,other.getAnimationNumber()*59,26,59));
+        perso.m_spritePerso.setTextureRect(sf::IntRect(perso.m_frameNumber*26,perso.m_animationNumber*59,26,59));
+        other.m_spritePerso.setTextureRect(sf::IntRect(other.m_frameNumber*26,other.m_animationNumber*59,26,59));
 
         // Changer la couleur du perso
         // perso.getSpritePerso().setColor(sf::Color(255, 255, 255));

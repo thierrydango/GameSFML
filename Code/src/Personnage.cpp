@@ -37,79 +37,9 @@ Personnage::Personnage(std::string const& path) :
     m_spritePerso.setTexture(m_texturePerso);
 }
 
-sf::Vector2f Personnage::getPosition()
-{
-    return sf::Vector2f(m_position.x, m_position.y);
-}
-
-sf::Vector2f Personnage::getDimensions()
-{
-    return m_dimensions;
-}
-
 sf::Vector2f Personnage::getOrigin()
 {
     return sf::Vector2f(m_position.x, m_position.y) - m_dimensions/2.0f;
-}
-
-unsigned int Personnage::getDirection()
-{
-    return m_direction;
-}
-
-unsigned int Personnage::getFrameNumber()
-{
-    return m_frameNumber;
-}
-
-unsigned int Personnage::getAnimationNumber()
-{
-    return m_animationNumber;
-}
-
-float Personnage::getX()
-{
-    return m_position.x;
-}
-
-float Personnage::getY()
-{
-    return m_position.y;
-}
-
-float Personnage::getZ()
-{
-    return m_position.z;
-}
-
-State Personnage::getState()
-{
-    return m_state;
-}
-
-sf::Sprite& Personnage::getSpritePerso()
-{
-    return m_spritePerso;
-}
-
-void Personnage::setX(float x)
-{
-    m_position.x = x;
-}
-
-void Personnage::setY(float y)
-{
-    m_position.y = y;
-}
-
-void Personnage::setZ(float z)
-{
-    m_position.z = z;
-}
-
-void Personnage::setState(State s)
-{
-    m_state = s;
 }
 
 void Personnage::startClock()
