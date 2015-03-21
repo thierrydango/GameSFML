@@ -171,14 +171,14 @@ int main(int argc, char *argv[])
     circlePW.setOutlineThickness(1);
     circlePW.setOutlineColor(sf::Color::Black);
 
-    sf::ConvexShape circleRegenPA = regenCircle(perso.m_regenPA, 16);
-    circleRegenPA.setFillColor(sf::Color(15,25,205,128));
+    sf::ConvexShape circleRegenPA = regenCircle(perso.m_regenPA, 16, (perso.m_PA == perso.m_PAmax));
+    circleRegenPA.setFillColor(sf::Color(15,25,205,64));
 
-    sf::ConvexShape circleRegenPM = regenCircle(perso.m_regenPM, 16);
-    circleRegenPM.setFillColor(sf::Color(15,205,25,128));
+    sf::ConvexShape circleRegenPM = regenCircle(perso.m_regenPM, 16, (perso.m_PM == perso.m_PMmax));
+    circleRegenPM.setFillColor(sf::Color(15,205,25,64));
 
-    sf::ConvexShape circleRegenPW = regenCircle(perso.m_regenPW, 16);
-    circleRegenPW.setFillColor(sf::Color(25,155,155,128));
+    sf::ConvexShape circleRegenPW = regenCircle(perso.m_regenPW, 16, (perso.m_PW == perso.m_PWmax));
+    circleRegenPW.setFillColor(sf::Color(25,155,155,64));
 
     // Creation de la barre de vie
     sf::ConvexShape cooldown;
@@ -287,15 +287,15 @@ int main(int argc, char *argv[])
 
         // Positionnement des cercles de PA, PM, PW et de régénération
         circlePA.setPosition(perso.getOrigin() - sf::Vector2f{334.0f,248.0f});
-        circleRegenPA = regenCircle(perso.m_regenPA, 16);
+        circleRegenPA = regenCircle(perso.m_regenPA, 16, (perso.m_PA == perso.m_PAmax));
         circleRegenPA.setPosition(perso.getOrigin() - sf::Vector2f{318.0f,232.0f});
         circleRegenPA.setFillColor(sf::Color(15,25,205,128));
         circlePM.setPosition(perso.getOrigin() - sf::Vector2f{264.0f,248.0f});
-        circleRegenPM = regenCircle(perso.m_regenPM, 16);
+        circleRegenPM = regenCircle(perso.m_regenPM, 16, (perso.m_PM == perso.m_PMmax));
         circleRegenPM.setPosition(perso.getOrigin() - sf::Vector2f{248.0f,232.0f});
         circleRegenPM.setFillColor(sf::Color(15,205,25,128));
         circlePW.setPosition(perso.getOrigin() - sf::Vector2f{194.0f,248.0f});
-        circleRegenPW = regenCircle(perso.m_regenPW, 16);
+        circleRegenPW = regenCircle(perso.m_regenPW, 16, (perso.m_PW == perso.m_PWmax));
         circleRegenPW.setFillColor(sf::Color(25,155,155,128));
         circleRegenPW.setPosition(perso.getOrigin() - sf::Vector2f{178.0f,232.0f});
 

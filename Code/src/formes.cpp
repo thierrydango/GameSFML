@@ -145,10 +145,13 @@ sf::ConvexShape healthBarre(float proportion)
     return convex;
 }
 
-sf::ConvexShape regenCircle(float proportion, float radius)
+sf::ConvexShape regenCircle(float proportion, float radius, bool isFull)
 {
     sf::ConvexShape convex;
     unsigned int nbPtsOnCircle = std::round(100*proportion);
+    if (isFull)
+        nbPtsOnCircle = 101;
+
     convex.setPointCount(1+nbPtsOnCircle);
     convex.setPoint(0, sf::Vector2f{0.0f,0.0f});
     float pi = 3.1416;
