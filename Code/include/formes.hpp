@@ -10,4 +10,6 @@ sf::CircleShape defineCircle(int posX, int posY, unsigned int rayon, sf::Color f
 
 sf::ConvexShape cooldownShape(sf::Vector2f center, unsigned int demiCoteCarre, float proportion, sf::Color fillColor);
 
+sf::ConvexShape healthBarre(float proportion);
+
 #endif // FORMES_HPP

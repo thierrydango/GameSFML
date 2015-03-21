@@ -30,7 +30,10 @@ Personnage::Personnage(std::string const& path) :
     m_pvMax{55u},
     m_pvActuels{55u},
     m_puissance{0u},
-    m_resistance{0u}
+    m_resistance{0u},
+    m_PA{6},
+    m_PM{3},
+    m_PW{6}
 {
     m_tempsDepuisDebutAnimation.restart();
     m_texturePerso.loadFromFile(path);

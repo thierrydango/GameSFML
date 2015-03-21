@@ -4,16 +4,15 @@
 #include <SFML/Window.hpp>
 #include <SFML/Graphics.hpp>
 #include <SFML/Network.hpp>
+#include "Portee.hpp"
 
-class Sort : public sf::Drawable
+class Sort
 {
     public:
         Sort();
         Sort(std::string const& path, sf::Vector3f const& pos);
 
-        void draw(sf::RenderTarget& target, sf::RenderStates states) const;
-
-    private:
+//    private:
         sf::Sprite m_spriteSort;
         sf::Texture m_textureSort;
         sf::Vector2f m_dimensions;

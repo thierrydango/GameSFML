@@ -72,6 +72,11 @@ class Personnage : public sf::Drawable
         unsigned int m_puissance;
         // Resistance du personnage
         unsigned int m_resistance;
+
+        // Points d'action, de mouvement et de special
+        unsigned short m_PA;
+        unsigned short m_PM;
+        unsigned short m_PW;
 };
 
 #endif // PERSONNAGE_HPP

@@ -18,7 +18,3 @@ Sort::Sort(std::string const& path, sf::Vector3f const& pos) :
     m_position = pos;
 }
 
-void Sort::draw(sf::RenderTarget& target, sf::RenderStates states) const
-{
-    target.draw(m_spriteSort);
-}

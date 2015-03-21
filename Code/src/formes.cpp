@@ -92,3 +92,55 @@ sf::ConvexShape cooldownShape(sf::Vector2f center, unsigned int demiCoteCarre, f
 
     return convex;
 }
+
+sf::ConvexShape healthBarre(float proportion)
+{
+    sf::ConvexShape convex;
+    convex.setFillColor(sf::Color{0,255,0,128});
+    convex.setPointCount(4);
+    convex.setPoint(0, sf::Vector2f{0.0f,0.0f});
+    sf::Vector2f secondPoint{312.0f*proportion, 0.0f};
+    convex.setPoint(1, secondPoint);
+
+    if (proportion < 158.0f/312.0f)
+    {
+        sf::Vector2f thirdPoint = secondPoint + sf::Vector2f(0.0f, 21.0f);
+        convex.setPoint(2, thirdPoint);
+        convex.setPoint(3, sf::Vector2f{0.0f, 21.0f});
+    }
+
+    else if (proportion >= 158.0f/312.0f && proportion <= 163.0f/312.0f)
+    {
+        convex.setPointCount(5);
+        sf::Vector2f thirdPoint = secondPoint + sf::Vector2f(0.0f, 21.0f-9*(proportion*312-158)/5);
+        convex.setPoint(2, thirdPoint);
+        convex.setPoint(3, sf::Vector2f{157.0f, 21.0f});
+        convex.setPoint(4, sf::Vector2f{0.0f, 21.0f});
+    }
+
+    else if (proportion > 158.0f/312.0f && proportion <= 305.0f/312.0f)
+    {
+        convex.setPointCount(6);
+        sf::Vector2f thirdPoint = secondPoint + sf::Vector2f(0.0f, 12.0f);
+        convex.setPoint(2, thirdPoint);
+        convex.setPoint(3, sf::Vector2f{162.0f, 12.0f});
+        convex.setPoint(4, sf::Vector2f{157.0f, 21.0f});
+        convex.setPoint(5, sf::Vector2f{0.0f, 21.0f});
+    }
+
+    else
+    {
+        convex.setPointCount(7);
+        sf::Vector2f thirdPoint = secondPoint + sf::Vector2f(0.0f, 12.0f-12*(proportion*312-305)/7);
+        convex.setPoint(2, thirdPoint);
+        convex.setPoint(3, sf::Vector2f{305.0f, 12.0f});
+        convex.setPoint(4, sf::Vector2f{162.0f, 12.0f});
+        convex.setPoint(5, sf::Vector2f{157.0f, 21.0f});
+        convex.setPoint(6, sf::Vector2f{0.0f, 21.0f});
+    }
+
+    convex.setOutlineThickness(1);
+    convex.setOutlineColor(sf::Color::Black);
+
+    return convex;
+}
