@@ -28,12 +28,23 @@ Personnage::Personnage(std::string const& path) :
     m_money{50},
     m_moneyDonnee{10},
     m_pvMax{55u},
-    m_pvActuels{55u},
+    m_pvActuels{5u},
     m_puissance{0u},
     m_resistance{0u},
-    m_PA{6},
-    m_PM{3},
-    m_PW{6}
+    m_PAmax{6},
+    m_PMmax{3},
+    m_PWmax{6},
+    m_PA{0},
+    m_PM{0},
+    m_PW{0},
+    m_regenPV{0.0f},
+    m_regenPA{0.0f},
+    m_regenPM{0.0f},
+    m_regenPW{0.0f},
+    m_speedRegenPV{0.01f},
+    m_speedRegenPA{0.01f},
+    m_speedRegenPM{0.008f},
+    m_speedRegenPW{0.001f}
 {
     m_tempsDepuisDebutAnimation.restart();
     m_texturePerso.loadFromFile(path);
@@ -93,6 +104,65 @@ bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet)
         }
     }
     return false;
+}
+
+void Personnage::regenStep()
+{
+    if (m_PA < m_PAmax)
+    {
+        m_regenPA += m_speedRegenPA;
+        while (m_regenPA >= 1 && m_PA < m_PAmax)
+        {
+            m_PA++;
+            m_regenPA--;
+        }
+    }
+    else
+    {
+        m_regenPA = 0;
+    }
+
+    if (m_PM < m_PMmax)
+    {
+        m_regenPM += m_speedRegenPM;
+        while (m_regenPM >= 1 && m_PM < m_PMmax)
+        {
+            m_PM++;
+            m_regenPM--;
+        }
+    }
+    else
+    {
+        m_regenPM = 0;
+    }
+
+    if (m_PW < m_PWmax)
+    {
+        m_regenPW += m_speedRegenPW;
+        while (m_regenPW >= 1 && m_PW < m_PWmax)
+        {
+            m_PW++;
+            m_regenPW--;
+        }
+    }
+    else
+    {
+        m_regenPW = 0;
+    }
+
+    if (m_pvActuels < m_pvMax)
+    {
+        m_regenPV += m_speedRegenPV;
+        while (m_regenPV >= 1 && m_pvActuels < m_pvMax)
+        {
+            m_pvActuels++;
+            m_regenPV--;
+        }
+    }
+    else
+    {
+        m_regenPV = 0;
+    }
 }
 
 void Personnage::networkOrientedNextStep()

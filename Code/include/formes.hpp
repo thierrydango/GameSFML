@@ -12,4 +12,6 @@ sf::ConvexShape cooldownShape(sf::Vector2f center, unsigned int demiCoteCarre, f
 
 sf::ConvexShape healthBarre(float proportion);
 
+sf::ConvexShape regenCircle(float proportion, float radius);
+
 #endif // FORMES_HPP

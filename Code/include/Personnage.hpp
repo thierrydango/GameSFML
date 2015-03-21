@@ -18,6 +18,9 @@ class Personnage : public sf::Drawable
         void startClock();
 
         bool manageEvent(sf::Event const& event, sf::Packet& packet);
+
+        void regenStep();
+
         void networkOrientedNextStep();
         void nextStep();
 
@@ -74,9 +77,22 @@ class Personnage : public sf::Drawable
         unsigned int m_resistance;
 
         // Points d'action, de mouvement et de special
+        unsigned short m_PAmax;
+        unsigned short m_PMmax;
+        unsigned short m_PWmax;
         unsigned short m_PA;
         unsigned short m_PM;
         unsigned short m_PW;
+
+        // Régénérateurs et vitesses de régénération
+        float m_regenPV;
+        float m_regenPA;
+        float m_regenPM;
+        float m_regenPW;
+        float m_speedRegenPV;
+        float m_speedRegenPA;
+        float m_speedRegenPM;
+        float m_speedRegenPW;
 };
 
 #endif // PERSONNAGE_HPP
