@@ -324,7 +324,10 @@ int main(int argc, char *argv[])
                 {
                     unsigned short degatsRecus;
                     packetReceived >> degatsRecus;
-                    perso.m_pvActuels -= degatsRecus;
+                    if (degatsRecus < perso.m_pvActuels)
+                        perso.m_pvActuels -= degatsRecus;
+                    else
+                        perso.m_pvActuels = 0;
                 }
             }
         }
@@ -431,14 +434,27 @@ int main(int argc, char *argv[])
         j = 0;
         while (j < sortsAttenteOther.size())
         {
+
             if (sortsAttenteOther[j].first.getElapsedTime() >= sortsAttenteOther[j].second.m_tempsIncantation)
             {
                 SortVisuel sortAffiche = sortsAttenteOther[j].second.m_sortVisuel;
-                //sortAffiche.m_spriteSort.setTexture(texturesSortsVisuels[1]);
-                sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
-                sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
-                sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
-                sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                sortAffiche.m_spriteSort.setOrigin(sortAffiche.m_rayon, sortAffiche.m_rayon);
+                if (sortAffiche.m_vitesse < 128)
+                    sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
+                else
+                    sortAffiche.m_vitesseReelle = -static_cast<float>(sortAffiche.m_vitesse)/10.0f+12.8f;
+                if (sortAffiche.m_acceleration < 128)
+                    sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
+                else
+                    sortAffiche.m_accelerationReelle = -static_cast<float>(sortAffiche.m_acceleration)/10.0f+12.8f;
+                if (sortAffiche.m_vitesseRotation < 128)
+                    sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
+                else
+                    sortAffiche.m_vitesseRotationReelle = -static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f+12.8f;
+                if (sortAffiche.m_accelerationAngulaire < 128)
+                    sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                else
+                    sortAffiche.m_accelerationAngulaireReelle = -static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f+12.8f;
                 float theta = other.m_direction*(3.1416f/16.0f) + static_cast<float>(sortAffiche.m_angle)*(3.1416f/128.0f);
                 sortAffiche.m_angleReel = theta*(128.0f/3.1416);
                 unsigned short porteeMinim = sortAffiche.m_porteeMin;

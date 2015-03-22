@@ -64,100 +64,111 @@ int main(int argc, char *argv[])
     selector.add(socketPlayer1);
     selector.add(socketPlayer2);
 
+    sf::Clock cadence60;
+    unsigned int numTour = 1;
+
     std::cout << "Both players are connected, the game starts now!" << std::endl;
 
     while (true)
     {
-        if (selector.wait(sf::seconds(60)))
+        sf::Packet packet1;
+        if (socketPlayer1.receive(packet1) == sf::Socket::Done)
         {
-            sf::Packet packet;
-            if (selector.isReady(socketPlayer1))
+            socketPlayer2.send(packet1);
+            unsigned char packetType;
+            packet1 >> packetType;
+
+            switch (packetType)
             {
-                socketPlayer1.receive(packet);
-                socketPlayer2.send(packet);
-                unsigned char packetType;
-                packet >> packetType;
-
-                switch (packetType)
+                case 1:
                 {
-                    case 1:
-                    {
-                        unsigned short newState;
-                        short x;
-                        short y;
-                        packet >> newState >> x >> y;
-//                        std::cout << "Received " << newState << " " << x << " " << y << " from Player 1" << std::endl;
-                        joueur1.m_position.x = x;
-                        joueur1.m_position.y = y;
-                        break;
-                    }
+                    unsigned short newState;
+                    short x;
+                    short y;
+                    packet1 >> newState >> x >> y;
+//                    std::cout << "Received " << newState << " " << x << " " << y << " from Player 1" << std::endl;
+                    joueur1.m_position.x = x;
+                    joueur1.m_position.y = y;
+                    State stateJoueur1{newState};
+                    joueur1.m_state = stateJoueur1;
+                    break;
+                }
 
-                    case 2:
-                    {
-                        Sort sortLance;
-                        packet >> sortLance;
-//                        std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
-//                        std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
-//                        std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
-//                        std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
-//                        std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
-//                        std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
-//                        std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
-//                        std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
-//                        std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
-//                        std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
-//                        std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
-//                        std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
-                        sortsAttentePerso.push_back(std::make_pair(sf::Clock(),sortLance));
-                        break;
-                    }
+                case 2:
+                {
+                    Sort sortLance;
+                    packet1 >> sortLance;
+//                    std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
+//                    std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
+//                    std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
+//                    std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
+//                    std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
+//                    std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
+//                    std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
+//                    std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
+//                    std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
+//                    std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
+//                    std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
+//                    std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
+                    sortsAttentePerso.push_back(std::make_pair(sf::Clock(),sortLance));
+                    break;
                 }
             }
-            if (selector.isReady(socketPlayer2))
+        }
+        sf::Packet packet2;
+        if (socketPlayer2.receive(packet2) == sf::Socket::Done)
+        {
+            socketPlayer1.send(packet2);
+            unsigned char packetType;
+            packet2 >> packetType;
+
+            switch (packetType)
             {
-                socketPlayer2.receive(packet);
-                socketPlayer1.send(packet);
-                unsigned char packetType;
-                packet >> packetType;
-
-                switch (packetType)
+                case 1:
                 {
-                    case 1:
-                    {
-                        unsigned short newState;
-                        short x;
-                        short y;
-                        packet >> newState >> x >> y;
-                        std::cout << "Received " << newState << " " << x << " " << y << " from Player 2" << std::endl;
-                        joueur2.m_position.x = x;
-                        joueur2.m_position.y = y;
-                        break;
-                    }
-
-                    case 2:
-                    {
-                        Sort sortLance;
-                        packet >> sortLance;
-//                        std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
-//                        std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
-//                        std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
-//                        std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
-//                        std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
-//                        std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
-//                        std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
-//                        std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
-//                        std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
-//                        std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
-//                        std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
-//                        std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
-                        sortsAttenteOther.push_back(std::make_pair(sf::Clock(),sortLance));
-                        break;
-                    }
-
+                    unsigned short newState;
+                    short x;
+                    short y;
+                    packet2 >> newState >> x >> y;
+//                    std::cout << "Received " << newState << " " << x << " " << y << " from Player 2" << std::endl;
+                    joueur2.m_position.x = x;
+                    joueur2.m_position.y = y;
+                    State stateJoueur2{newState};
+                    joueur2.m_state = stateJoueur2;
+                    break;
                 }
-            }
 
-            std::cout << "Passage apres le if else" << std::endl;
+                case 2:
+                {
+                    Sort sortLance;
+                    packet2 >> sortLance;
+//                    std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
+//                    std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
+//                    std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
+//                    std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
+//                    std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
+//                    std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
+//                    std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
+//                    std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
+//                    std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
+//                    std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
+//                    std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
+//                    std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
+                   sortsAttenteOther.push_back(std::make_pair(sf::Clock(),sortLance));
+                   break;
+                }
+
+            }
+        }
+
+        // Instructions à effectuer 60 fois par seconde
+        while (cadence60.getElapsedTime() > sf::microseconds(16667*numTour))
+        {
+
+            numTour++;
+
+            joueur1.networkOrientedNextStep();
+            joueur2.networkOrientedNextStep();
 
             // Gestion des sorts en attente
             unsigned int j = 0;
@@ -198,14 +209,26 @@ int main(int argc, char *argv[])
             j = 0;
             while (j < sortsAttenteOther.size())
             {
+
                 if (sortsAttenteOther[j].first.getElapsedTime() >= sortsAttenteOther[j].second.m_tempsIncantation)
                 {
                     SortVisuel sortAffiche = sortsAttenteOther[j].second.m_sortVisuel;
-                    //sortAffiche.m_spriteSort.setTexture(texturesSortsVisuels[1]);
-                    sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
-                    sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
-                    sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
-                    sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                    if (sortAffiche.m_vitesse < 128)
+                        sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
+                    else
+                        sortAffiche.m_vitesseReelle = -static_cast<float>(sortAffiche.m_vitesse)/10.0f+12.8f;
+                    if (sortAffiche.m_acceleration < 128)
+                        sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
+                    else
+                        sortAffiche.m_accelerationReelle = -static_cast<float>(sortAffiche.m_acceleration)/10.0f+12.8f;
+                    if (sortAffiche.m_vitesseRotation < 128)
+                        sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
+                    else
+                        sortAffiche.m_vitesseRotationReelle = -static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f+12.8f;
+                    if (sortAffiche.m_accelerationAngulaire < 128)
+                        sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                    else
+                        sortAffiche.m_accelerationAngulaireReelle = -static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f+12.8f;
                     float theta = joueur2.m_direction*(3.1416f/16.0f) + static_cast<float>(sortAffiche.m_angle)*(3.1416f/128.0f);
                     sortAffiche.m_angleReel = theta*(128.0f/3.1416);
                     unsigned short porteeMinim = sortAffiche.m_porteeMin;
@@ -222,14 +245,17 @@ int main(int argc, char *argv[])
             for (unsigned int i = 0; i < sortsVisuelsPerso.size(); i++)
             {
                 SortVisuel sortVisu = sortsVisuelsPerso[i];
-                std::cout << (std::sqrt((sortVisu.m_position.x-joueur2.m_position.x)*(sortVisu.m_position.x-joueur2.m_position.x)+(sortVisu.m_position.y-joueur2.m_position.y)*(sortVisu.m_position.y-joueur2.m_position.y)) < sortVisu.m_rayon) << std::endl;
+                std::cout << "(x,y)Joueur = " << joueur2.m_position.x << " " << joueur2.m_position.y << std::endl;
+                std::cout << "(x,y)Sort = " << sortVisu.m_position.x << " " << sortVisu.m_position.y << std::endl;
+                std::cout << "AngleSort = " << sortVisu.m_angleReel << std::endl;
+                std::cout << (std::sqrt((sortVisu.m_position.x-joueur2.m_position.x)*(sortVisu.m_position.x-joueur2.m_position.x)+(sortVisu.m_position.y-joueur2.m_position.y)*(sortVisu.m_position.y-joueur2.m_position.y))) << std::endl;
                 if (std::sqrt((sortVisu.m_position.x-joueur2.m_position.x)*(sortVisu.m_position.x-joueur2.m_position.x)+(sortVisu.m_position.y-joueur2.m_position.y)*(sortVisu.m_position.y-joueur2.m_position.y)) < sortVisu.m_rayon)
                 {
                     std::cout << "TOUCHE" << std::endl;
                     sortsVisuelsPerso[i].m_distanceParcourue = sortsVisuelsPerso[i].m_longueurTrajectoire;
                     sf::Packet packetDegatsInfliges;
                     unsigned char packetType = 3;
-                    unsigned short degatsInfliges = static_cast<float>(sortsVisuelsPerso[i].m_degatsBase) * (1.0f + static_cast<float>(joueur1.m_puissance)/100.0f);
+                    unsigned short degatsInfliges = static_cast<unsigned short>(std::round(static_cast<float>(sortsVisuelsPerso[i].m_degatsBase) * (1.0f + static_cast<float>(joueur1.m_puissance)/100.0f) - static_cast<float>(joueur2.m_resistance)/100.0f));
                     packetDegatsInfliges << packetType << degatsInfliges;
                     socketPlayer2.send(packetDegatsInfliges);
                 }
@@ -238,14 +264,14 @@ int main(int argc, char *argv[])
             for (unsigned int i = 0; i < sortsVisuelsOther.size(); i++)
             {
                 SortVisuel sortVisu = sortsVisuelsOther[i];
-                std::cout << (std::sqrt((sortVisu.m_position.x-joueur1.m_position.x)*(sortVisu.m_position.x-joueur1.m_position.x)+(sortVisu.m_position.y-joueur1.m_position.y)*(sortVisu.m_position.y-joueur1.m_position.y)) < sortVisu.m_rayon) << std::endl;
+                std::cout << (std::sqrt((sortVisu.m_position.x-joueur1.m_position.x)*(sortVisu.m_position.x-joueur1.m_position.x)+(sortVisu.m_position.y-joueur1.m_position.y)*(sortVisu.m_position.y-joueur1.m_position.y))) << std::endl;
                 if (std::sqrt((sortVisu.m_position.x-joueur1.m_position.x)*(sortVisu.m_position.x-joueur1.m_position.x)+(sortVisu.m_position.y-joueur1.m_position.y)*(sortVisu.m_position.y-joueur1.m_position.y)) < sortVisu.m_rayon)
                 {
                     std::cout << "TOUCHE" << std::endl;
                     sortsVisuelsOther[i].m_distanceParcourue = sortsVisuelsOther[i].m_longueurTrajectoire;
                     sf::Packet packetDegatsInfliges;
                     unsigned char packetType = 3;
-                    unsigned short degatsInfliges = static_cast<float>(sortsVisuelsOther[i].m_degatsBase) * (1.0f + static_cast<float>(joueur2.m_puissance)/100.0f);
+                    unsigned short degatsInfliges = static_cast<unsigned short>(std::round(static_cast<float>(sortsVisuelsOther[i].m_degatsBase) * (1.0f + static_cast<float>(joueur2.m_puissance)/100.0f) - static_cast<float>(joueur1.m_resistance)/100.0f));
                     packetDegatsInfliges << packetType << degatsInfliges;
                     socketPlayer1.send(packetDegatsInfliges);
                 }
@@ -277,11 +303,11 @@ int main(int argc, char *argv[])
             for (unsigned int i = 0; i < sortsVisuelsOther.size(); i++)
                 sortsVisuelsOther[i].nextStep();
         }
-        else
-        {
-            std::cout << "No reception during the last 60 seconds..." << std::endl;
-        }
-
+            //else
+            //{
+            //    std::cout << "No reception during the last 60 seconds..." << std::endl;
+            //}
     }
+
 
 }

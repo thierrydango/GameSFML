@@ -3,10 +3,45 @@
 #include "VectorFunctions.hpp"
 
 Personnage::Personnage() :
-    m_position{0.0f, 0.0f, 0.0f},
-    m_projection{0.0f, 0.0f, 0.0f}
+    m_spritePerso{},
+    m_texturePerso{},
+    m_dimensions{26u, 59u},
+    m_frameNumber{0},
+    m_animationNumber{0},
+    m_position{200.0f, 480.0f, 0.0f},
+    m_vitesse{5.0f},
+    m_rayon{15.0f},
+    m_direction{0u},
+    m_projection{0.0f, 0.0f, 0.0f},
+    m_state{},
+    m_level{1u},
+    m_xpTotale{0},
+    m_xpPourUp{120},
+    m_xpDonnee{10},
+    m_money{50},
+    m_moneyDonnee{10},
+    m_pvMax{155u},
+    m_pvActuels{155u},
+    m_puissance{500u},
+    m_resistance{100u},
+    m_PAmax{6},
+    m_PMmax{3},
+    m_PWmax{6},
+    m_PA{6},
+    m_PM{3},
+    m_PW{6},
+    m_regenPV{0.0f},
+    m_regenPA{0.0f},
+    m_regenPM{0.0f},
+    m_regenPW{0.0f},
+    m_speedRegenPV{0.01f},
+    m_speedRegenPA{0.01f},
+    m_speedRegenPM{0.005f},
+    m_speedRegenPW{0.001f},
+    m_tempsIncantation{sf::milliseconds(0)}
 {
-
+    m_tempsDepuisDebutAnimation.restart();
+    m_tempsIncante.restart();
 }
 
 Personnage::Personnage(std::string const& path) :
@@ -27,10 +62,10 @@ Personnage::Personnage(std::string const& path) :
     m_xpDonnee{10},
     m_money{50},
     m_moneyDonnee{10},
-    m_pvMax{55u},
-    m_pvActuels{55u},
-    m_puissance{0u},
-    m_resistance{0u},
+    m_pvMax{155u},
+    m_pvActuels{155u},
+    m_puissance{500u},
+    m_resistance{100u},
     m_PAmax{6},
     m_PMmax{3},
     m_PWmax{6},
