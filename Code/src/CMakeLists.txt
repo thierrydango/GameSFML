@@ -1,4 +1,4 @@
-add_library(Tools Personnage.cpp State.cpp formes.cpp Portee.cpp SortVisuel.cpp)
+add_library(Tools Personnage.cpp State.cpp formes.cpp Portee.cpp Sort.cpp SortVisuel.cpp)
 
 add_executable(Client client.cpp)
 target_link_libraries(Client Tools ${SFML_LIBRARIES})

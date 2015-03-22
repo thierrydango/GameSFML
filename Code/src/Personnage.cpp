@@ -43,7 +43,7 @@ Personnage::Personnage(std::string const& path) :
     m_regenPW{0.0f},
     m_speedRegenPV{0.01f},
     m_speedRegenPA{0.01f},
-    m_speedRegenPM{0.008f},
+    m_speedRegenPM{0.005f},
     m_speedRegenPW{0.001f}
 {
     m_tempsDepuisDebutAnimation.restart();
@@ -122,7 +122,7 @@ void Personnage::regenStep()
         m_regenPA = 0;
     }
 
-    if (m_PM < m_PMmax)
+    if (m_PM < m_PMmax && m_state == State{0})
     {
         m_regenPM += m_speedRegenPM;
         while (m_regenPM >= 1 && m_PM < m_PMmax)
@@ -133,7 +133,8 @@ void Personnage::regenStep()
     }
     else
     {
-        m_regenPM = 0;
+        if (m_PM >= m_PMmax)
+            m_regenPM = 0;
     }
 
     if (m_PW < m_PWmax)

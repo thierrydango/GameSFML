@@ -101,9 +101,9 @@ int main(int argc, char *argv[])
     spritePW.setTexture(texturePW);
 
     // Initialiser un vecteur de textures à charger
-    unsigned int nbTexturesSorts = 2;
-    std::vector<sf::Texture> texturesSorts;
-    for (unsigned int i = 0; i < nbTexturesSorts; i++)
+    unsigned int nbTexturesSortsVisuels = 5;
+    std::vector<sf::Texture> texturesSortsVisuels;
+    for (unsigned int i = 0; i < nbTexturesSortsVisuels; i++)
     {
         sf::Texture textureSort;
         std::string pathToSort = "graphics/sprites/Sorts/Sort" + std::to_string(i) + ".png";
@@ -116,14 +116,41 @@ int main(int argc, char *argv[])
                 return -1;
             }
         }
-        texturesSorts.push_back(textureSort);
+        texturesSortsVisuels.push_back(textureSort);
     }
 
     // Initialiser un vecteur de sorts à afficher
     std::vector<SortVisuel> sortsVisuels;
 
-    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSorts});
-    sortsVisuels.push_back({sf::Vector3f{700.0f, 400.0f, 0.0f}, 1, texturesSorts});
+    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 5u});
+    sortsVisuels.push_back({sf::Vector3f{700.0f, 400.0f, 0.0f}, 1, texturesSortsVisuels, 5u});
+
+    // Initialiser un vecteur de textures à charger
+    unsigned int nbTexturesSortsIcons = 401;
+    std::vector<sf::Texture> texturesSortsIcons;
+    for (unsigned int i = 0; i < nbTexturesSortsIcons; i++)
+    {
+        sf::Texture textureSort;
+        std::string pathToSort = "graphics/icons/IconSorts/IconSort" + std::to_string(i) + ".png";
+        if (!textureSort.loadFromFile(pathToSort))
+        {
+            std::cout << "Error when loading the texture of Sort" << i << ".png" << std::endl;
+            if (!textureSort.loadFromFile("graphics/icons/IconSorts/IconSort0.png"))
+            {
+                std::cout << "Le sprite de secours n'a pas pu être chargé non plus..." << std::endl;
+                return -1;
+            }
+        }
+        texturesSortsIcons.push_back(textureSort);
+    }
+
+    // Initialiser un vecteur de sorts à afficher
+    std::vector<Sort> sortsIcons;
+
+    sortsIcons.push_back({7, 3, 0, 0, sf::Time{sf::milliseconds(300)}, sf::Time{sf::milliseconds(5000)}, 0, 120, 1, 16, 5, texturesSortsIcons});
+    sortsIcons.push_back({30, 4, 1, 0, sf::Time{sf::milliseconds(500)}, sf::Time{sf::milliseconds(8000)}, 60, 200, 4, 16, 9, texturesSortsIcons});
+    sortsIcons.push_back({1, 5, 0, 1, sf::Time{sf::milliseconds(900)}, sf::Time{sf::milliseconds(15000)}, 100, 320, 2, 16, 12, texturesSortsIcons});
+    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(600)}, sf::Time{sf::milliseconds(10000)}, 0, 400, 3, 16, 10, texturesSortsIcons});
 
     // Spécifier la position du bord haut gauche de la fenêtre
     window.setPosition(sf::Vector2i(0,0));
@@ -325,16 +352,22 @@ int main(int argc, char *argv[])
         // Régénération du personnage
         perso.regenStep();
 
-        // Deplacement du personnage
-        perso.networkOrientedNextStep();
-        other.networkOrientedNextStep();
-
         // Deplacement des sorts
         for (unsigned int i = 0; i < sortsVisuels.size(); i++)
         {
             sortsVisuels[i].m_spriteSort.setPosition(sortsVisuels[i].getOrigin());
 //            sortsVisuels[i].nextStep();
         }
+
+        for (unsigned int i = 0; i < sortsIcons.size(); i++)
+        {
+            sortsIcons[i].m_spriteSort.setPosition(perso.getOrigin() - sf::Vector2f{392.0f,232.0f-32.0f*i});
+
+        }
+
+        // Deplacement du personnage
+        perso.networkOrientedNextStep();
+        other.networkOrientedNextStep();
 
         // C'est ici qu'on dessine tout
         window.draw(contour);
@@ -362,6 +395,9 @@ int main(int argc, char *argv[])
         // Affichage des sorts
         for (unsigned int i = 0; i < sortsVisuels.size(); i++)
             window.draw(sortsVisuels[i]);
+
+        for (unsigned int i = 0; i < sortsIcons.size(); i++)
+            window.draw(sortsIcons[i]);
 
         window.draw(other);
         window.draw(perso);

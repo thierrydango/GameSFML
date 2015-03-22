@@ -9,7 +9,7 @@ class SortVisuel : public sf::Drawable
 {
     public:
         SortVisuel();
-        SortVisuel(sf::Vector3f const& pos, unsigned short textureIndex, std::vector<sf::Texture> const& textures);
+        SortVisuel(sf::Vector3f const& pos, unsigned short textureIndex, std::vector<sf::Texture> const& textures, unsigned int puissance);
 
         sf::Vector2f getOrigin();
 
@@ -19,8 +19,8 @@ class SortVisuel : public sf::Drawable
         sf::Sprite m_spriteSort;
         unsigned short m_textureIndex;
         sf::Vector2f m_dimensions;
-        float m_rayon;
-        float m_degatsBase;
+        unsigned short m_rayon;
+        unsigned int m_degatsBase;
         sf::Vector3f m_position;
 };
 
