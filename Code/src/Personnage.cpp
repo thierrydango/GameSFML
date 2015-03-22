@@ -183,8 +183,6 @@ bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet, std::ve
 
             if (elapsedTime >= cooldown && m_PA >= coutPA && m_PM >= coutPM && m_PW >= coutPW)
             {
-                // Le packet sera de la forme :
-                // (2, Xperso, Yperso, tempsIncanta, porteeMin, longuTraj, textureIdx, rayon, degats)
                 sortsIcons[indexSortLance].restartElapsedTime();
                 m_PA -= coutPA;
                 m_PM -= coutPM;

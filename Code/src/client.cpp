@@ -290,10 +290,10 @@ int main(int argc, char *argv[])
                     short x;
                     short y;
                     packetReceived >> direction >> x >> y;
-                    std::cout << "Received : " << x << " " << y << std::endl;
+//                    std::cout << "Received : " << x << " " << y << std::endl;
                     State stateOther{direction};
                     other.m_state = stateOther;
-                    std::cout << "Received : " << other.m_state << std::endl;
+//                    std::cout << "Received : " << other.m_state << std::endl;
                     other.m_position.x = x;
                     other.m_position.y = y;
                     break;
@@ -303,21 +303,28 @@ int main(int argc, char *argv[])
                 {
                     Sort sortLance;
                     packetReceived >> sortLance;
-                    std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
-                    std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
-                    std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
-                    std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
-                    std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
-                    std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
-                    std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
-                    std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
-                    std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
-                    std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
-                    std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
-                    std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
+//                    std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
+//                    std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
+//                    std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
+//                    std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
+//                    std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
+//                    std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
+//                    std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
+//                    std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
+//                    std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
+//                    std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
+//                    std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
+//                    std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
                     sortLance.m_sortVisuel.m_spriteSort.setTexture(texturesSortsVisuels[sortLance.m_sortVisuel.m_textureIndex]);
                     sortsAttenteOther.push_back(std::make_pair(sf::Clock(),sortLance));
                     break;
+                }
+
+                case 3:
+                {
+                    unsigned short degatsRecus;
+                    packetReceived >> degatsRecus;
+                    perso.m_pvActuels -= degatsRecus;
                 }
             }
         }
@@ -393,10 +400,22 @@ int main(int argc, char *argv[])
             if (sortsAttentePerso[j].first.getElapsedTime() >= sortsAttentePerso[j].second.m_tempsIncantation)
             {
                 SortVisuel sortAffiche = sortsAttentePerso[j].second.m_sortVisuel;
-                sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
-                sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
-                sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
-                sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                if (sortAffiche.m_vitesse < 128)
+                    sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
+                else
+                    sortAffiche.m_vitesseReelle = -static_cast<float>(sortAffiche.m_vitesse)/10.0f+12.8f;
+                if (sortAffiche.m_acceleration < 128)
+                    sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
+                else
+                    sortAffiche.m_accelerationReelle = -static_cast<float>(sortAffiche.m_acceleration)/10.0f+12.8f;
+                if (sortAffiche.m_vitesseRotation < 128)
+                    sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
+                else
+                    sortAffiche.m_vitesseRotationReelle = -static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f+12.8f;
+                if (sortAffiche.m_accelerationAngulaire < 128)
+                    sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                else
+                    sortAffiche.m_accelerationAngulaireReelle = -static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f+12.8f;
                 float theta = perso.m_direction*(3.1416f/16.0f) + static_cast<float>(sortAffiche.m_angle)*(3.1416f/128.0f);
                 sortAffiche.m_angleReel = theta*(128.0f/3.1416);
                 unsigned short porteeMinim = sortAffiche.m_porteeMin;
