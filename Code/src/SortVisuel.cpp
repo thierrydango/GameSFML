@@ -17,7 +17,7 @@ SortVisuel::SortVisuel(sf::Vector3f const& pos, unsigned short textureIndex, std
     m_degatsBase{puissance},
     m_porteeMin{porteeMin},
     m_longueurTrajectoire{longueurTrajectoire},
-    m_distanceParcourue{0u},
+    m_distanceParcourue{0.0f},
     m_vitesse{vitesse},
     m_acceleration{acceleration},
     m_angle{angle},
@@ -27,12 +27,23 @@ SortVisuel::SortVisuel(sf::Vector3f const& pos, unsigned short textureIndex, std
     m_dureeVecue{sf::Clock()}
 {
     m_spriteSort.setTexture(textures[m_textureIndex]);
+    m_spriteSort.setOrigin(rayon, rayon);
     m_position = pos;
 }
 
 sf::Vector2f SortVisuel::getOrigin()
 {
-    return sf::Vector2f(m_position.x, m_position.y) - m_dimensions/2.0f;
+    return sf::Vector2f(m_position.x, m_position.y); // - m_dimensions/2.0f;
+}
+
+void SortVisuel::nextStep()
+{
+    m_vitesseReelle += m_accelerationReelle/10.0f;
+    m_vitesseRotationReelle += m_accelerationAngulaireReelle/10.0f;
+    m_angleReel += m_vitesseRotationReelle;
+    float theta = static_cast<float>(m_angleReel*(3.1416f/128.0f));
+    m_position += static_cast<float>(m_vitesseReelle) * sf::Vector3f{std::cos(theta), -std::sin(theta), 0.0f};
+    m_distanceParcourue += m_vitesseReelle;
 }
 
 void SortVisuel::draw(sf::RenderTarget& target, sf::RenderStates states) const

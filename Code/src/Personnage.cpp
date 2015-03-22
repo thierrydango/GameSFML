@@ -28,15 +28,15 @@ Personnage::Personnage(std::string const& path) :
     m_money{50},
     m_moneyDonnee{10},
     m_pvMax{55u},
-    m_pvActuels{5u},
+    m_pvActuels{55u},
     m_puissance{0u},
     m_resistance{0u},
     m_PAmax{6},
     m_PMmax{3},
     m_PWmax{6},
-    m_PA{0},
-    m_PM{0},
-    m_PW{0},
+    m_PA{6},
+    m_PM{3},
+    m_PW{6},
     m_regenPV{0.0f},
     m_regenPA{0.0f},
     m_regenPM{0.0f},
@@ -55,7 +55,7 @@ Personnage::Personnage(std::string const& path) :
 
 sf::Vector2f Personnage::getOrigin()
 {
-    return sf::Vector2f(m_position.x, m_position.y) - m_dimensions/2.0f;
+    return sf::Vector2f(m_position.x, m_position.y)- m_dimensions/2.0f;
 }
 
 void Personnage::startClock()
@@ -63,7 +63,7 @@ void Personnage::startClock()
     m_tempsDepuisDebutAnimation.restart();
 }
 
-bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet, std::vector<Sort> & sortsIcons)
+bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet, std::vector<Sort> & sortsIcons, std::vector<std::pair<sf::Clock, Sort>>& sortsAttente)
 {
     // Traitement des évènements de type Flèches directionnelles
     if ((event.type == sf::Event::KeyPressed) || (event.type == sf::Event::KeyReleased))
@@ -191,6 +191,7 @@ bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet, std::ve
                 m_PW -= coutPW;
                 unsigned char packetType = 2;
                 packet << packetType << sortLance;
+                sortsAttente.push_back(std::make_pair(sf::Clock(),sortLance));
                 m_tempsIncantation = tempsIncantation;
                 m_tempsIncante.restart();
                 return true;

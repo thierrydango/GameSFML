@@ -122,8 +122,8 @@ int main(int argc, char *argv[])
     // Initialiser un vecteur de sorts à afficher
     std::vector<SortVisuel> sortsVisuels;
 
-    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 16u, 5u, 0u, 400u, 3, 0, 0, 1, 0, sf::Time{sf::milliseconds(4000)}});
-    sortsVisuels.push_back({sf::Vector3f{500.0f, 400.0f, 0.0f}, 2, texturesSortsVisuels, 16u, 7u, 0u, 500u, 2, 1, 128, 0, 1, sf::Time{sf::milliseconds(6000)}});
+//    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 16u, 5u, 0u, 400u, 3, 0, 0, 1, 0, sf::Time{sf::milliseconds(4000)}});
+//    sortsVisuels.push_back({sf::Vector3f{500.0f, 400.0f, 0.0f}, 2, texturesSortsVisuels, 16u, 7u, 0u, 500u, 2, 1, 128, 0, 1, sf::Time{sf::milliseconds(6000)}});
 
     // Initialiser un vecteur de textures à charger
     unsigned int nbTexturesSortsIcons = 401;
@@ -147,15 +147,19 @@ int main(int argc, char *argv[])
     // Initialiser un vecteur de sorts à afficher
     std::vector<Sort> sortsIcons;
 
-    SortVisuel sortVisuel1{sf::Vector3f{0.0f,0.0f,0.0f}, 1, texturesSortsVisuels, 16u, 5,    0u, 120, 3, 0, 0, 0, 0, sf::Time(sf::milliseconds(3000))};
-    SortVisuel sortVisuel2{sf::Vector3f{0.0f,0.0f,0.0f}, 2, texturesSortsVisuels, 16u, 9,   60u, 200, 4, 1, 0, 1, 0, sf::Time(sf::milliseconds(5000))};
-    SortVisuel sortVisuel3{sf::Vector3f{0.0f,0.0f,0.0f}, 3, texturesSortsVisuels, 16u, 12, 100u, 320, 2, 0, 0, 0, 1, sf::Time(sf::milliseconds(6000))};
-    SortVisuel sortVisuel4{sf::Vector3f{0.0f,0.0f,0.0f}, 4, texturesSortsVisuels, 13u, 10,   0u, 403, 5, 0, 0, 0, 0, sf::Time(sf::milliseconds(4000))};
+    SortVisuel sortVisuel1{sf::Vector3f{0.0f,0.0f,0.0f}, 1, texturesSortsVisuels, 16u, 5,    0u, 520, 30, 0, 0, 0, 0, sf::Time(sf::milliseconds(5000))};
+    SortVisuel sortVisuel2{sf::Vector3f{0.0f,0.0f,0.0f}, 4, texturesSortsVisuels, 16u, 9,   60u, 800, 40, 2, 0, 10, 0, sf::Time(sf::milliseconds(6000))};
+    SortVisuel sortVisuel3{sf::Vector3f{0.0f,0.0f,0.0f}, 2, texturesSortsVisuels, 16u, 12, 100u, 1320, 25, 1, 0, 0, 3, sf::Time(sf::milliseconds(8000))};
+    SortVisuel sortVisuel4{sf::Vector3f{0.0f,0.0f,0.0f}, 3, texturesSortsVisuels, 16u, 10,   0u, 1400, 10, 2, 0, 5, 1, sf::Time(sf::milliseconds(8000))};
 
-    sortsIcons.push_back({7, 3, 0, 0, sf::Time{sf::milliseconds(300)}, sf::Time{sf::milliseconds(5000)}, sortVisuel1, texturesSortsIcons});
-    sortsIcons.push_back({30, 4, 1, 0, sf::Time{sf::milliseconds(500)}, sf::Time{sf::milliseconds(8000)}, sortVisuel2, texturesSortsIcons});
-    sortsIcons.push_back({1, 5, 0, 1, sf::Time{sf::milliseconds(900)}, sf::Time{sf::milliseconds(15000)}, sortVisuel3, texturesSortsIcons});
-    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(600)}, sf::Time{sf::milliseconds(10000)}, sortVisuel4, texturesSortsIcons});
+    sortsIcons.push_back({  7, 2, 0, 0, sf::Time{sf::milliseconds(200)},  sf::Time{sf::milliseconds(2000)}, sortVisuel1, texturesSortsIcons});
+    sortsIcons.push_back({ 30, 3, 1, 0, sf::Time{sf::milliseconds(300)},  sf::Time{sf::milliseconds(5000)}, sortVisuel2, texturesSortsIcons});
+    sortsIcons.push_back({  1, 4, 0, 1, sf::Time{sf::milliseconds(900)}, sf::Time{sf::milliseconds(8000)}, sortVisuel3, texturesSortsIcons});
+    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(500)}, sf::Time{sf::milliseconds(4000)}, sortVisuel4, texturesSortsIcons});
+
+    // Initialiser deux vecteurs de sorts en attente de la fin de leurs temps d'incantation
+    std::vector<std::pair<sf::Clock, Sort>> sortsAttentePerso;
+    std::vector<std::pair<sf::Clock, Sort>> sortsAttenteOther;
 
     // Spécifier la position du bord haut gauche de la fenêtre
     window.setPosition(sf::Vector2i(0,0));
@@ -263,7 +267,7 @@ int main(int argc, char *argv[])
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (perso.manageEvent(event, packet,sortsIcons))
+            if (perso.manageEvent(event, packet, sortsIcons, sortsAttentePerso))
             {
                 socket.send(packet);
                 packet.clear();
@@ -311,7 +315,8 @@ int main(int argc, char *argv[])
                     std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
                     std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
                     std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
-
+                    sortLance.m_sortVisuel.m_spriteSort.setTexture(texturesSortsVisuels[sortLance.m_sortVisuel.m_textureIndex]);
+                    sortsAttenteOther.push_back(std::make_pair(sf::Clock(),sortLance));
                     break;
                 }
             }
@@ -375,9 +380,57 @@ int main(int argc, char *argv[])
             cooldowns[i] = cooldownShape(perso.getOrigin() - sf::Vector2f(376.0f,216.0f-32.0f*i), 16, std::min(prop,1.0f), sf::Color(0,0,255,128));
         }
 
+        // Gestion des barres de vie
         barreVie = healthBarre((static_cast<float>(perso.m_pvActuels)+perso.m_regenPV)/static_cast<float>(perso.m_pvMax));
         ratioVie.setString(std::to_string(perso.m_pvActuels) + "/" + std::to_string(perso.m_pvMax));
         barreVie.setPosition(perso.getOrigin().x-299, perso.getOrigin().y-274);
+
+        // Gestion des sorts en attente
+        unsigned int j = 0;
+        while (j < sortsAttentePerso.size())
+        {
+
+            if (sortsAttentePerso[j].first.getElapsedTime() >= sortsAttentePerso[j].second.m_tempsIncantation)
+            {
+                SortVisuel sortAffiche = sortsAttentePerso[j].second.m_sortVisuel;
+                sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
+                sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
+                sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
+                sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                float theta = perso.m_direction*(3.1416f/16.0f) + static_cast<float>(sortAffiche.m_angle)*(3.1416f/128.0f);
+                sortAffiche.m_angleReel = theta*(128.0f/3.1416);
+                unsigned short porteeMinim = sortAffiche.m_porteeMin;
+                sortAffiche.m_position = perso.m_position + static_cast<float>(porteeMinim)*sf::Vector3f{std::cos(theta),-std::sin(theta), 0.0f};
+                sortAffiche.m_dureeVecue.restart();
+                sortsVisuels.push_back(sortAffiche);
+                sortsAttentePerso.erase(sortsAttentePerso.begin()+j);
+            }
+            else
+                j++;
+        }
+
+        j = 0;
+        while (j < sortsAttenteOther.size())
+        {
+            if (sortsAttenteOther[j].first.getElapsedTime() >= sortsAttenteOther[j].second.m_tempsIncantation)
+            {
+                SortVisuel sortAffiche = sortsAttenteOther[j].second.m_sortVisuel;
+                //sortAffiche.m_spriteSort.setTexture(texturesSortsVisuels[1]);
+                sortAffiche.m_vitesseReelle = static_cast<float>(sortAffiche.m_vitesse)/10.0f;
+                sortAffiche.m_accelerationReelle = static_cast<float>(sortAffiche.m_acceleration)/10.0f;
+                sortAffiche.m_vitesseRotationReelle = static_cast<float>(sortAffiche.m_vitesseRotation)/10.0f;
+                sortAffiche.m_accelerationAngulaireReelle = static_cast<float>(sortAffiche.m_accelerationAngulaire)/10.0f;
+                float theta = other.m_direction*(3.1416f/16.0f) + static_cast<float>(sortAffiche.m_angle)*(3.1416f/128.0f);
+                sortAffiche.m_angleReel = theta*(128.0f/3.1416);
+                unsigned short porteeMinim = sortAffiche.m_porteeMin;
+                sortAffiche.m_position = other.m_position + static_cast<float>(porteeMinim)*sf::Vector3f{std::cos(theta),-std::sin(theta), 0.0f};
+                sortAffiche.m_dureeVecue.restart();
+                sortsVisuels.push_back(sortAffiche);
+                sortsAttenteOther.erase(sortsAttenteOther.begin()+j);
+            }
+            else
+                j++;
+        }
 
         //view.setCenter(sf::Vector2f(perso.getX(),perso.getY()));
         window.setView(view);
@@ -385,11 +438,23 @@ int main(int argc, char *argv[])
         // Régénération du personnage
         perso.regenStep();
 
+        // Retrait des sorts ayant fait leur temps ou dépassé leur distance à parcourir
+        j = 0;
+        while (j < sortsVisuels.size())
+        {
+
+            if (sortsVisuels[j].m_dureeVecue.getElapsedTime() >= sortsVisuels[j].m_dureeDeVie || sortsVisuels[j].m_distanceParcourue >= sortsVisuels[j].m_longueurTrajectoire)
+                sortsVisuels.erase(sortsVisuels.begin()+j);
+            else
+                j++;
+        }
+
         // Deplacement des sorts
         for (unsigned int i = 0; i < sortsVisuels.size(); i++)
         {
             sortsVisuels[i].m_spriteSort.setPosition(sortsVisuels[i].getOrigin());
-//            sortsVisuels[i].nextStep();
+            sortsVisuels[i].nextStep();
+            sortsVisuels[i].m_spriteSort.setRotation(-static_cast<float>(sortsVisuels[i].m_angleReel)*(360.0f/256.0f));
         }
 
         for (unsigned int i = 0; i < sortsIcons.size(); i++)

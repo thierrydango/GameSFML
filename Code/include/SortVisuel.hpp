@@ -13,6 +13,8 @@ class SortVisuel : public sf::Drawable
 
         sf::Vector2f getOrigin();
 
+        void nextStep();
+
         void draw(sf::RenderTarget& target, sf::RenderStates states) const;
 
 //    private:
@@ -24,14 +26,19 @@ class SortVisuel : public sf::Drawable
         unsigned short m_porteeMin;
         sf::Vector3f m_position;
         unsigned short m_longueurTrajectoire;
-        unsigned short m_distanceParcourue;
+        float m_distanceParcourue;
         unsigned char m_vitesse;
+        float m_vitesseReelle;
         unsigned char m_acceleration;
+        float m_accelerationReelle;
 
         // L'angle est entre 0 et 255 mappé entre 0 et 255/128pi
         unsigned char m_angle;
+        float m_angleReel;
         unsigned char m_vitesseRotation;
+        float m_vitesseRotationReelle;
         unsigned char m_accelerationAngulaire;
+        float m_accelerationAngulaireReelle;
         sf::Time m_dureeDeVie;
         sf::Clock m_dureeVecue;
 };

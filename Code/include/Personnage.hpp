@@ -18,7 +18,7 @@ class Personnage : public sf::Drawable
 
         void startClock();
 
-        bool manageEvent(sf::Event const& event, sf::Packet& packet, std::vector<Sort> & sortsIcons);
+        bool manageEvent(sf::Event const& event, sf::Packet& packet, std::vector<Sort> & sortsIcons, std::vector<std::pair<sf::Clock, Sort>>& sortsAttente);
 
         void regenStep();
 
