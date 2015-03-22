@@ -29,6 +29,10 @@ sf::CircleShape defineCircle(int posX, int posY, unsigned int rayon, sf::Color f
 sf::ConvexShape cooldownShape(sf::Vector2f center, unsigned int demiCoteCarre, float proportion, sf::Color fillColor)
 {
     sf::ConvexShape convex;
+
+    if (proportion == 0 || proportion == 1)
+        return convex;
+
     convex.setFillColor(fillColor);
     convex.setPointCount(2);
     convex.setPoint(0, center);

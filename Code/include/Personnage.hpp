@@ -6,6 +6,7 @@
 #include <SFML/Network.hpp>
 
 #include "State.hpp"
+#include "Sort.hpp"
 
 class Personnage : public sf::Drawable
 {
@@ -17,7 +18,7 @@ class Personnage : public sf::Drawable
 
         void startClock();
 
-        bool manageEvent(sf::Event const& event, sf::Packet& packet);
+        bool manageEvent(sf::Event const& event, sf::Packet& packet, std::vector<Sort> & sortsIcons);
 
         void regenStep();
 
@@ -93,6 +94,9 @@ class Personnage : public sf::Drawable
         float m_speedRegenPA;
         float m_speedRegenPM;
         float m_speedRegenPW;
+
+        sf::Time m_tempsIncantation;
+        sf::Clock m_tempsIncante;
 };
 
 #endif // PERSONNAGE_HPP

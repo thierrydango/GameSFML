@@ -122,8 +122,8 @@ int main(int argc, char *argv[])
     // Initialiser un vecteur de sorts à afficher
     std::vector<SortVisuel> sortsVisuels;
 
-    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 5u});
-    sortsVisuels.push_back({sf::Vector3f{700.0f, 400.0f, 0.0f}, 1, texturesSortsVisuels, 5u});
+    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 16u, 5u, 0u, 400u, 3, 0, 0, 1, 0, sf::Time{sf::milliseconds(4000)}});
+    sortsVisuels.push_back({sf::Vector3f{500.0f, 400.0f, 0.0f}, 2, texturesSortsVisuels, 16u, 7u, 0u, 500u, 2, 1, 128, 0, 1, sf::Time{sf::milliseconds(6000)}});
 
     // Initialiser un vecteur de textures à charger
     unsigned int nbTexturesSortsIcons = 401;
@@ -147,10 +147,15 @@ int main(int argc, char *argv[])
     // Initialiser un vecteur de sorts à afficher
     std::vector<Sort> sortsIcons;
 
-    sortsIcons.push_back({7, 3, 0, 0, sf::Time{sf::milliseconds(300)}, sf::Time{sf::milliseconds(5000)}, 0, 120, 1, 16, 5, texturesSortsIcons});
-    sortsIcons.push_back({30, 4, 1, 0, sf::Time{sf::milliseconds(500)}, sf::Time{sf::milliseconds(8000)}, 60, 200, 4, 16, 9, texturesSortsIcons});
-    sortsIcons.push_back({1, 5, 0, 1, sf::Time{sf::milliseconds(900)}, sf::Time{sf::milliseconds(15000)}, 100, 320, 2, 16, 12, texturesSortsIcons});
-    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(600)}, sf::Time{sf::milliseconds(10000)}, 0, 400, 3, 16, 10, texturesSortsIcons});
+    SortVisuel sortVisuel1{sf::Vector3f{0.0f,0.0f,0.0f}, 1, texturesSortsVisuels, 16u, 5,    0u, 120, 3, 0, 0, 0, 0, sf::Time(sf::milliseconds(3000))};
+    SortVisuel sortVisuel2{sf::Vector3f{0.0f,0.0f,0.0f}, 2, texturesSortsVisuels, 16u, 9,   60u, 200, 4, 1, 0, 1, 0, sf::Time(sf::milliseconds(5000))};
+    SortVisuel sortVisuel3{sf::Vector3f{0.0f,0.0f,0.0f}, 3, texturesSortsVisuels, 16u, 12, 100u, 320, 2, 0, 0, 0, 1, sf::Time(sf::milliseconds(6000))};
+    SortVisuel sortVisuel4{sf::Vector3f{0.0f,0.0f,0.0f}, 4, texturesSortsVisuels, 13u, 10,   0u, 403, 5, 0, 0, 0, 0, sf::Time(sf::milliseconds(4000))};
+
+    sortsIcons.push_back({7, 3, 0, 0, sf::Time{sf::milliseconds(300)}, sf::Time{sf::milliseconds(5000)}, sortVisuel1, texturesSortsIcons});
+    sortsIcons.push_back({30, 4, 1, 0, sf::Time{sf::milliseconds(500)}, sf::Time{sf::milliseconds(8000)}, sortVisuel2, texturesSortsIcons});
+    sortsIcons.push_back({1, 5, 0, 1, sf::Time{sf::milliseconds(900)}, sf::Time{sf::milliseconds(15000)}, sortVisuel3, texturesSortsIcons});
+    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(600)}, sf::Time{sf::milliseconds(10000)}, sortVisuel4, texturesSortsIcons});
 
     // Spécifier la position du bord haut gauche de la fenêtre
     window.setPosition(sf::Vector2i(0,0));
@@ -208,7 +213,9 @@ int main(int argc, char *argv[])
     circleRegenPW.setFillColor(sf::Color(25,155,155,64));
 
     // Creation de la barre de vie
-    sf::ConvexShape cooldown;
+    std::vector<sf::ConvexShape> cooldowns;
+    for (unsigned int i = 0; i < sortsIcons.size(); i++)
+        cooldowns.push_back(sf::ConvexShape());
     sf::ConvexShape barreVie;
     sf::Font font;
     sf::Text ratioVie;
@@ -256,9 +263,10 @@ int main(int argc, char *argv[])
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (perso.manageEvent(event, packet))
+            if (perso.manageEvent(event, packet,sortsIcons))
             {
                 socket.send(packet);
+                packet.clear();
             }
             if (event.type == sf::Event::Closed)
                 window.close();
@@ -273,6 +281,7 @@ int main(int argc, char *argv[])
             switch (packetType)
             {
                 case 1:
+                {
                     unsigned short direction;
                     short x;
                     short y;
@@ -284,7 +293,27 @@ int main(int argc, char *argv[])
                     other.m_position.x = x;
                     other.m_position.y = y;
                     break;
+                }
 
+                case 2:
+                {
+                    Sort sortLance;
+                    packetReceived >> sortLance;
+                    std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
+                    std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
+                    std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
+                    std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
+                    std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
+                    std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
+                    std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
+                    std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
+                    std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
+                    std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
+                    std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
+                    std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
+
+                    break;
+                }
             }
         }
 
@@ -339,8 +368,12 @@ int main(int argc, char *argv[])
         spritePM.setPosition(perso.getOrigin() - sf::Vector2f{250.0f,240.0f});
         spritePW.setPosition(perso.getOrigin() - sf::Vector2f{180.0f,240.0f});
 
-        // Gestion du cooldown
-        cooldown = cooldownShape(sf::Vector2f(150,150), 45, 0.625, sf::Color(0,0,255,128));
+        // Gestion des cooldowns
+        for (unsigned int i = 0; i < sortsIcons.size(); i++)
+        {
+            float prop = static_cast<float>(sortsIcons[i].m_elapsedTime.getElapsedTime().asMilliseconds())/static_cast<float>(sortsIcons[i].m_cooldown.asMilliseconds());
+            cooldowns[i] = cooldownShape(perso.getOrigin() - sf::Vector2f(376.0f,216.0f-32.0f*i), 16, std::min(prop,1.0f), sf::Color(0,0,255,128));
+        }
 
         barreVie = healthBarre((static_cast<float>(perso.m_pvActuels)+perso.m_regenPV)/static_cast<float>(perso.m_pvMax));
         ratioVie.setString(std::to_string(perso.m_pvActuels) + "/" + std::to_string(perso.m_pvMax));
@@ -362,7 +395,6 @@ int main(int argc, char *argv[])
         for (unsigned int i = 0; i < sortsIcons.size(); i++)
         {
             sortsIcons[i].m_spriteSort.setPosition(perso.getOrigin() - sf::Vector2f{392.0f,232.0f-32.0f*i});
-
         }
 
         // Deplacement du personnage
@@ -371,7 +403,6 @@ int main(int argc, char *argv[])
 
         // C'est ici qu'on dessine tout
         window.draw(contour);
-        window.draw(cooldown);
         window.draw(ellipse);
         window.draw(spriteHealthBar);
         window.draw(spriteXpBar);
@@ -398,6 +429,9 @@ int main(int argc, char *argv[])
 
         for (unsigned int i = 0; i < sortsIcons.size(); i++)
             window.draw(sortsIcons[i]);
+
+        for (unsigned int i = 0; i < cooldowns.size(); i++)
+            window.draw(cooldowns[i]);
 
         window.draw(other);
         window.draw(perso);

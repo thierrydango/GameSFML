@@ -44,11 +44,13 @@ Personnage::Personnage(std::string const& path) :
     m_speedRegenPV{0.01f},
     m_speedRegenPA{0.01f},
     m_speedRegenPM{0.005f},
-    m_speedRegenPW{0.001f}
+    m_speedRegenPW{0.001f},
+    m_tempsIncantation{sf::milliseconds(0)}
 {
     m_tempsDepuisDebutAnimation.restart();
     m_texturePerso.loadFromFile(path);
     m_spritePerso.setTexture(m_texturePerso);
+    m_tempsIncante.restart();
 }
 
 sf::Vector2f Personnage::getOrigin()
@@ -61,8 +63,9 @@ void Personnage::startClock()
     m_tempsDepuisDebutAnimation.restart();
 }
 
-bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet)
+bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet, std::vector<Sort> & sortsIcons)
 {
+    // Traitement des évènements de type Flèches directionnelles
     if ((event.type == sf::Event::KeyPressed) || (event.type == sf::Event::KeyReleased))
     {
         State currentState = m_state;
@@ -103,6 +106,98 @@ bool Personnage::manageEvent(sf::Event const& event, sf::Packet& packet)
             return true;
         }
     }
+
+    // Traitement des évènements de type Lancement de sort
+    if (event.type == sf::Event::KeyReleased && m_tempsIncante.getElapsedTime() >= m_tempsIncantation)
+    {
+        bool keySort = false;
+        Sort sortLance;
+        unsigned short indexSortLance = 0;
+
+        switch (event.key.code)
+        {
+            case sf::Keyboard::A:
+                keySort = true;
+                indexSortLance = 0;
+                break;
+
+            case sf::Keyboard::Z:
+                keySort = true;
+                indexSortLance = 1;
+                break;
+
+            case sf::Keyboard::E:
+                keySort = true;
+                indexSortLance = 2;
+                break;
+
+            case sf::Keyboard::R:
+                keySort = true;
+                indexSortLance = 3;
+                break;
+
+            case sf::Keyboard::T:
+                keySort = true;
+                indexSortLance = 4;
+                break;
+
+            case sf::Keyboard::Y:
+                keySort = true;
+                indexSortLance = 5;
+                break;
+
+            case sf::Keyboard::U:
+                keySort = true;
+                indexSortLance = 6;
+                break;
+
+            case sf::Keyboard::I:
+                keySort = true;
+                indexSortLance = 7;
+                break;
+
+            case sf::Keyboard::O:
+                keySort = true;
+                indexSortLance = 8;
+                break;
+
+            case sf::Keyboard::P:
+                keySort = true;
+                indexSortLance = 9;
+                break;
+
+            default:
+                break;
+        }
+
+        if (keySort)
+        {
+            sortLance = sortsIcons[indexSortLance];
+            SortVisuel sortVisuelLance = sortLance.m_sortVisuel;
+            unsigned char coutPA{sortLance.m_coutPA};
+            unsigned char coutPM{sortLance.m_coutPM};
+            unsigned char coutPW{sortLance.m_coutPW};
+            sf::Time tempsIncantation{sortLance.m_tempsIncantation};
+            sf::Time cooldown{sortLance.m_cooldown};
+            sf::Time elapsedTime{sortLance.m_elapsedTime.getElapsedTime()};
+
+            if (elapsedTime >= cooldown && m_PA >= coutPA && m_PM >= coutPM && m_PW >= coutPW)
+            {
+                // Le packet sera de la forme :
+                // (2, Xperso, Yperso, tempsIncanta, porteeMin, longuTraj, textureIdx, rayon, degats)
+                sortsIcons[indexSortLance].restartElapsedTime();
+                m_PA -= coutPA;
+                m_PM -= coutPM;
+                m_PW -= coutPW;
+                unsigned char packetType = 2;
+                packet << packetType << sortLance;
+                m_tempsIncantation = tempsIncantation;
+                m_tempsIncante.restart();
+                return true;
+            }
+        }
+    }
+
     return false;
 }
 

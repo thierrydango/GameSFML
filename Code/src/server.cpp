@@ -70,12 +70,34 @@ int main(int argc, char *argv[])
                 switch (packetType)
                 {
                     case 1:
+                    {
                         unsigned short newState;
                         short x;
                         short y;
                         packet >> newState >> x >> y;
                         std::cout << "Received " << newState << " " << x << " " << y << " from Player 1" << std::endl;
                         break;
+                    }
+
+                    case 2:
+                    {
+                        Sort sortLance;
+                        packet >> sortLance;
+                        std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
+                        std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
+                        std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
+                        std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
+                        std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
+                        std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
+                        std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
+                        std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
+                        std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
+                        std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
+                        std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
+                        std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
+
+                        break;
+                    }
                 }
             }
             if (selector.isReady(socketPlayer2))
@@ -88,12 +110,35 @@ int main(int argc, char *argv[])
                 switch (packetType)
                 {
                     case 1:
+                    {
                         unsigned short newState;
                         short x;
                         short y;
                         packet >> newState >> x >> y;
                         std::cout << "Received " << newState << " " << x << " " << y << " from Player 2" << std::endl;
                         break;
+                    }
+
+                    case 2:
+                    {
+                        Sort sortLance;
+                        packet >> sortLance;
+                        std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
+                        std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
+                        std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
+                        std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
+                        std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
+                        std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
+                        std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
+                        std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
+                        std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
+                        std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
+                        std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
+                        std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
+
+                        break;
+                    }
+
                 }
             }
         }
