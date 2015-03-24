@@ -43,7 +43,7 @@ void SortVisuel::nextStep()
     m_angleReel += m_vitesseRotationReelle;
     float theta = static_cast<float>(m_angleReel*(3.1416f/128.0f));
     m_position += static_cast<float>(m_vitesseReelle) * sf::Vector3f{std::cos(theta), -std::sin(theta), 0.0f};
-    m_distanceParcourue += m_vitesseReelle;
+    m_distanceParcourue += std::abs(m_vitesseReelle);
 }
 
 void SortVisuel::draw(sf::RenderTarget& target, sf::RenderStates states) const

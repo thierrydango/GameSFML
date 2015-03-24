@@ -36,6 +36,8 @@ int main(int argc, char *argv[])
     sf::View view;
     view.setSize(sf::Vector2f(longueurFenetre,largeurFenetre));
 
+    bool partieHasStarted = false;
+
     // Création du personnage
     sf::Sprite spritePerso;
     sf::Texture texturePerso;
@@ -46,6 +48,8 @@ int main(int argc, char *argv[])
     sf::Sprite spriteOther;
     sf::Texture textureOther;
     Personnage other("graphics/sprites/SpriteIop01.png");
+    other.m_position.x = 8000;
+    other.m_position.y = 8000;
 
     // Création des menus
     sf::Sprite spriteHealthBar;
@@ -147,15 +151,17 @@ int main(int argc, char *argv[])
     // Initialiser un vecteur de sorts à afficher
     std::vector<Sort> sortsIcons;
 
-    SortVisuel sortVisuel1{sf::Vector3f{0.0f,0.0f,0.0f}, 1, texturesSortsVisuels, 16u, 5,    0u, 520, 30, 0, 0, 0, 0, sf::Time(sf::milliseconds(5000))};
-    SortVisuel sortVisuel2{sf::Vector3f{0.0f,0.0f,0.0f}, 4, texturesSortsVisuels, 16u, 9,   60u, 800, 40, 2, 0, 10, 0, sf::Time(sf::milliseconds(6000))};
-    SortVisuel sortVisuel3{sf::Vector3f{0.0f,0.0f,0.0f}, 2, texturesSortsVisuels, 16u, 12, 100u, 1320, 25, 1, 0, 0, 3, sf::Time(sf::milliseconds(8000))};
-    SortVisuel sortVisuel4{sf::Vector3f{0.0f,0.0f,0.0f}, 3, texturesSortsVisuels, 16u, 10,   0u, 1400, 10, 2, 0, 5, 1, sf::Time(sf::milliseconds(8000))};
+    SortVisuel sortVisuel1{sf::Vector3f{0.0f,0.0f,0.0f}, 1, texturesSortsVisuels, 16u, 5,    0u, 520, 60, 0, 0, 0, 0, sf::Time(sf::milliseconds(5000))};
+    SortVisuel sortVisuel2{sf::Vector3f{0.0f,0.0f,0.0f}, 4, texturesSortsVisuels, 16u, 9,   60u, 800, 80, 2, 0, 30, 0, sf::Time(sf::milliseconds(6000))};
+    SortVisuel sortVisuel3{sf::Vector3f{0.0f,0.0f,0.0f}, 2, texturesSortsVisuels, 16u, 12, 100u, 1320, 65, 1, 0, 0, 3, sf::Time(sf::milliseconds(8000))};
+    SortVisuel sortVisuel4{sf::Vector3f{0.0f,0.0f,0.0f}, 3, texturesSortsVisuels, 16u, 10,   0u, 1400, 70, 2, 0, 25, 1, sf::Time(sf::milliseconds(8000))};
+    SortVisuel sortVisuel5{sf::Vector3f{0.0f,0.0f,0.0f}, 3, texturesSortsVisuels, 16u, 10,   0u, 1400, 70, 2, 0, 153, 129, sf::Time(sf::milliseconds(8000))};
 
-    sortsIcons.push_back({  7, 2, 0, 0, sf::Time{sf::milliseconds(200)},  sf::Time{sf::milliseconds(2000)}, sortVisuel1, texturesSortsIcons});
-    sortsIcons.push_back({ 30, 3, 1, 0, sf::Time{sf::milliseconds(300)},  sf::Time{sf::milliseconds(5000)}, sortVisuel2, texturesSortsIcons});
-    sortsIcons.push_back({  1, 4, 0, 1, sf::Time{sf::milliseconds(900)}, sf::Time{sf::milliseconds(8000)}, sortVisuel3, texturesSortsIcons});
-    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(500)}, sf::Time{sf::milliseconds(4000)}, sortVisuel4, texturesSortsIcons});
+    sortsIcons.push_back({  7, 2, 0, 0, sf::Time{sf::milliseconds(50)},  sf::Time{sf::milliseconds(200)}, sortVisuel1, texturesSortsIcons});
+    sortsIcons.push_back({ 30, 3, 1, 0, sf::Time{sf::milliseconds(80)},  sf::Time{sf::milliseconds(500)}, sortVisuel2, texturesSortsIcons});
+    sortsIcons.push_back({  1, 4, 0, 1, sf::Time{sf::milliseconds(90)}, sf::Time{sf::milliseconds(800)}, sortVisuel3, texturesSortsIcons});
+    sortsIcons.push_back({187, 2, 1, 1, sf::Time{sf::milliseconds(70)}, sf::Time{sf::milliseconds(600)}, sortVisuel4, texturesSortsIcons});
+    sortsIcons.push_back({188, 2, 1, 1, sf::Time{sf::milliseconds(70)}, sf::Time{sf::milliseconds(600)}, sortVisuel5, texturesSortsIcons});
 
     // Initialiser deux vecteurs de sorts en attente de la fin de leurs temps d'incantation
     std::vector<std::pair<sf::Clock, Sort>> sortsAttentePerso;
@@ -179,12 +185,16 @@ int main(int argc, char *argv[])
     contour.setPosition(-1000,-600);
 
     sf::CircleShape ellipse;
+    sf::Texture ground;
+    ground.loadFromFile("graphics/sprites/ground.png");
+    ellipse.setTexture(&ground,true);
     ellipse.setFillColor(sf::Color(100u,100u,100u));
     ellipse.setPointCount(100);
     ellipse.setRadius(480);
     ellipse.setScale(1.33333,1.0);
     ellipse.setPosition(0,0);
     ellipse.move(0.0,20.0);
+    ellipse.setTexture(&ground,true);
 
     sf::CircleShape circlePA;
     circlePA.setFillColor(sf::Color(255,255,255,128));
@@ -267,7 +277,7 @@ int main(int argc, char *argv[])
         sf::Event event;
         while (window.pollEvent(event))
         {
-            if (perso.manageEvent(event, packet, sortsIcons, sortsAttentePerso))
+            if (perso.manageEvent(event, packet, sortsIcons, sortsAttentePerso) && partieHasStarted)
             {
                 socket.send(packet);
                 packet.clear();
@@ -284,42 +294,31 @@ int main(int argc, char *argv[])
 
             switch (packetType)
             {
+                // Réception de la position et direction de l'adversaire
                 case 1:
                 {
                     unsigned short direction;
                     short x;
                     short y;
                     packetReceived >> direction >> x >> y;
-//                    std::cout << "Received : " << x << " " << y << std::endl;
                     State stateOther{direction};
                     other.m_state = stateOther;
-//                    std::cout << "Received : " << other.m_state << std::endl;
                     other.m_position.x = x;
                     other.m_position.y = y;
                     break;
                 }
 
+                // Réception d'un sort lancé par l'adversaire
                 case 2:
                 {
                     Sort sortLance;
                     packetReceived >> sortLance;
-//                    std::cout << "Received temps Incantation :" << sortLance.m_tempsIncantation.asMilliseconds() << std::endl;
-//                    std::cout << "Received texture index :" << sortLance.m_sortVisuel.m_textureIndex << std::endl;
-//                    std::cout << "Received rayon :" << sortLance.m_sortVisuel.m_rayon << std::endl;
-//                    std::cout << "Received degats :" << sortLance.m_sortVisuel.m_degatsBase << std::endl;
-//                    std::cout << "Received porteeMin :" << sortLance.m_sortVisuel.m_porteeMin << std::endl;
-//                    std::cout << "Received longueurTrajectoire :" << sortLance.m_sortVisuel.m_longueurTrajectoire << std::endl;
-//                    std::cout << "Received vitesse :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesse) << std::endl;
-//                    std::cout << "Received acceleration :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_acceleration) << std::endl;
-//                    std::cout << "Received angle :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_angle) << std::endl;
-//                    std::cout << "Received vitesse rotation :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_vitesseRotation) << std::endl;
-//                    std::cout << "Received acceleration angulaire :" << static_cast<unsigned int>(sortLance.m_sortVisuel.m_accelerationAngulaire) << std::endl;
-//                    std::cout << "Received duree de Vie :" << sortLance.m_sortVisuel.m_dureeDeVie.asMilliseconds() << std::endl;
                     sortLance.m_sortVisuel.m_spriteSort.setTexture(texturesSortsVisuels[sortLance.m_sortVisuel.m_textureIndex]);
                     sortsAttenteOther.push_back(std::make_pair(sf::Clock(),sortLance));
                     break;
                 }
 
+                // Réception de dégats sur soi
                 case 3:
                 {
                     unsigned short degatsRecus;
@@ -328,7 +327,73 @@ int main(int argc, char *argv[])
                         perso.m_pvActuels -= degatsRecus;
                     else
                         perso.m_pvActuels = 0;
+                    break;
                 }
+
+                // Réception de dégats sur l'adversaire
+                case 4:
+                {
+                    unsigned short degatsRecus;
+                    packetReceived >> degatsRecus;
+                    if (degatsRecus < other.m_pvActuels)
+                        other.m_pvActuels -= degatsRecus;
+                    else
+                        other.m_pvActuels = 0;
+                    break;
+                }
+
+                // Réception d'une notification de victoire du combat
+                case 5:
+                {
+                    std::cout << "You won the fight !" << std::endl;
+                    other.m_pvActuels = 0;
+                    other.m_speedRegenPV = 0;
+                    other.m_PA = 0;
+                    other.m_speedRegenPA = 0;
+                    other.m_PM = 0;
+                    other.m_speedRegenPM = 0;
+                    other.m_PW = 0;
+                    other.m_speedRegenPW = 0;
+                    break;
+                }
+
+                // Réception d'une notification de défaite du combat
+                case 6:
+                {
+                    std::cout << "You lost the fight !" << std::endl;
+                    perso.m_pvActuels = 0;
+                    perso.m_speedRegenPV = 0;
+                    perso.m_PA = 0;
+                    perso.m_speedRegenPA = 0;
+                    perso.m_PM = 0;
+                    perso.m_speedRegenPM = 0;
+                    perso.m_PW = 0;
+                    perso.m_speedRegenPW = 0;
+                    break;
+                }
+
+                // Réception de l'information que l'on ait Joueur 1
+                case 7:
+                {
+                    partieHasStarted = true;
+                    perso.m_position.x = 200.0f;
+                    perso.m_position.y = 480.0f;
+                    other.m_position.x = 1080.0f;
+                    other.m_position.y = 480.0f;
+                    break;
+                }
+
+               // Réception de l'information que l'on ait Joueur 1
+                case 8:
+                {
+                    partieHasStarted = true;
+                    perso.m_position.x = 1080.0f;
+                    perso.m_position.y = 480.0f;
+                    other.m_position.x = 200.0f;
+                    other.m_position.y = 480.0f;
+                    break;
+                }
+
             }
         }
 
@@ -346,8 +411,10 @@ int main(int argc, char *argv[])
         other.m_spritePerso.setTextureRect(sf::IntRect(other.m_frameNumber*26,other.m_animationNumber*59,26,59));
 
         // Changer la couleur du perso
-        // perso.getSpritePerso().setColor(sf::Color(255, 255, 255));
-        // other.getSpritePerso().setColor(sf::Color(255, 100, 100));
+        unsigned int ratioViePerso = (255*perso.m_pvActuels)/perso.m_pvMax;
+        unsigned int ratioVieOther = (255*other.m_pvActuels)/other.m_pvMax;
+        perso.m_spritePerso.setColor(sf::Color(255, ratioViePerso, ratioViePerso));
+        other.m_spritePerso.setColor(sf::Color(255, ratioVieOther, ratioVieOther));
 
         // Positionnement du menu
         spriteHealthBar.setPosition(perso.getOrigin() - sf::Vector2f{390.0f,290.0f});
@@ -472,6 +539,7 @@ int main(int argc, char *argv[])
 
         // Régénération du personnage
         perso.regenStep();
+        other.regenStep();
 
         // Retrait des sorts ayant fait leur temps ou dépassé leur distance à parcourir
         j = 0;
