@@ -121,7 +121,7 @@ int main(int argc, char *argv[])
                 return -1;
             }
         }
-        texturesSortsVisuels.push_back(textureSort);
+        texturesSortsVisuels.emplace_back(textureSort);
     }
 
     // Initialiser un vecteur de sorts à afficher
@@ -133,11 +133,14 @@ int main(int argc, char *argv[])
 //    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 16u, 5u, 0u, 400u, 3, 0, 0, 1, 0, sf::Time{sf::milliseconds(4000)}});
 //    sortsVisuels.push_back({sf::Vector3f{500.0f, 400.0f, 0.0f}, 2, texturesSortsVisuels, 16u, 7u, 0u, 500u, 2, 1, 128, 0, 1, sf::Time{sf::milliseconds(6000)}});
 
+    std::cout << "Initialisation des vecteurs de 401 textures" << std::endl;
+
     // Initialiser un vecteur de textures à charger
     unsigned int nbTexturesSortsIcons = 401;
     std::vector<sf::Texture> texturesSortsIcons;
     for (unsigned int i = 0; i < nbTexturesSortsIcons; i++)
     {
+        std::cout << "Loading texture " << i+1 << "/" << nbTexturesSortsIcons << "\r";
         sf::Texture textureSort;
         std::string pathToSort = "graphics/icons/IconSorts/IconSort" + std::to_string(i) + ".png";
         if (!textureSort.loadFromFile(pathToSort))
@@ -151,6 +154,10 @@ int main(int argc, char *argv[])
         }
         texturesSortsIcons.push_back(textureSort);
     }
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "Les " << nbTexturesSortsIcons << " textures d'icônes de sort ont été chargées" << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
     // Initialiser un vecteur de sorts à afficher
     std::vector<Sort> sortsIcons;
@@ -179,8 +186,6 @@ int main(int argc, char *argv[])
 
     // Limiter le nombre d'images par seconde
     window.setFramerateLimit(60);
-
-    std::cout << "Game launching" << std::endl;
 
     // Creation et initialisation des éléments
     sf::RectangleShape contour;
@@ -234,6 +239,7 @@ int main(int argc, char *argv[])
     std::vector<sf::ConvexShape> cooldowns;
     for (unsigned int i = 0; i < sortsIcons.size(); i++)
         cooldowns.push_back(sf::ConvexShape());
+
     sf::ConvexShape barreVie;
     sf::Font font;
     sf::Text ratioVie;
@@ -274,6 +280,10 @@ int main(int argc, char *argv[])
     PWText.setFont(font);
     PWText.setCharacterSize(18);
     PWText.setColor(sf::Color(85,225,255,248));
+
+    //////////////////////////////////////////////////////////////////////////////////////////////
+    std::cout << "Game launching" << std::endl;
+    //////////////////////////////////////////////////////////////////////////////////////////////
 
     while (window.isOpen())
     {
@@ -393,6 +403,7 @@ int main(int argc, char *argv[])
                 // Réception de l'information que l'on ait Joueur 1
                 case 7:
                 {
+                    std::cout << "You are player 1" << std::endl;
                     partieHasStarted = true;
                     perso.m_position.x = 200.0f;
                     perso.m_position.y = 480.0f;
@@ -404,6 +415,7 @@ int main(int argc, char *argv[])
                // Réception de l'information que l'on ait Joueur 1
                 case 8:
                 {
+                    std::cout << "You are player 2" << std::endl;
                     partieHasStarted = true;
                     perso.m_position.x = 1080.0f;
                     perso.m_position.y = 480.0f;

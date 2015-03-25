@@ -79,6 +79,8 @@ int main(int argc, char *argv[])
     selector.add(socketPlayer1);
     selector.add(socketPlayer2);
 
+    bool partieTerminee = false;
+
     sf::Clock cadence60;
     unsigned int numTour = 1;
 
@@ -110,6 +112,7 @@ int main(int argc, char *argv[])
 
                 case 2:
                 {
+                    std::cout << "Récéption d'un sort du j1" << std::endl;
                     Sort sortLance;
                     packet1 >> sortLance;
                     sortsAttentePerso.push_back(std::make_pair(sf::Clock(),sortLance));
@@ -141,6 +144,7 @@ int main(int argc, char *argv[])
 
                 case 2:
                 {
+                    std::cout << "Récéption d'un sort du j2" << std::endl;
                     Sort sortLance;
                     packet2 >> sortLance;
                     sortsAttenteOther.push_back(std::make_pair(sf::Clock(),sortLance));
@@ -193,6 +197,7 @@ int main(int argc, char *argv[])
                     sortAffiche.m_dureeVecue.restart();
                     sortsVisuelsPerso.push_back(sortAffiche);
                     sortsAttentePerso.erase(sortsAttentePerso.begin()+j);
+                    std::cout << "SortPerso(" << sortAffiche.m_position.x << ", " << sortAffiche.m_position.y << ") Perso(" << joueur1.m_position.x << ", " << joueur1.m_position.y << ") Other(" << joueur2.m_position.x << ", " << joueur2.m_position.y << ")" << std::endl;
                 }
                 else
                     j++;
@@ -228,6 +233,7 @@ int main(int argc, char *argv[])
                     sortAffiche.m_dureeVecue.restart();
                     sortsVisuelsOther.push_back(sortAffiche);
                     sortsAttenteOther.erase(sortsAttenteOther.begin()+j);
+                    std::cout << "SortOther(" << sortAffiche.m_position.x << ", " << sortAffiche.m_position.y << ") Perso(" << joueur1.m_position.x << ", " << joueur1.m_position.y << ") Other(" << joueur2.m_position.x << ", " << joueur2.m_position.y << ")" << std::endl;
                 }
                 else
                     j++;
@@ -237,7 +243,7 @@ int main(int argc, char *argv[])
             for (unsigned int i = 0; i < sortsVisuelsPerso.size(); i++)
             {
                 SortVisuel sortVisu = sortsVisuelsPerso[i];
-                if (std::sqrt((sortVisu.m_position.x-joueur2.m_position.x)*(sortVisu.m_position.x-joueur2.m_position.x)+(sortVisu.m_position.y-joueur2.m_position.y)*(sortVisu.m_position.y-joueur2.m_position.y)) < sortVisu.m_rayon+joueur2.m_rayon)
+                if ((std::sqrt((sortVisu.m_position.x-joueur2.m_position.x)*(sortVisu.m_position.x-joueur2.m_position.x)+(sortVisu.m_position.y-joueur2.m_position.y)*(sortVisu.m_position.y-joueur2.m_position.y)) < sortVisu.m_rayon+joueur2.m_rayon) && !partieTerminee)
                 {
                     std::cout << "TOUCHE" << std::endl;
                     sortsVisuelsPerso[i].m_distanceParcourue = sortsVisuelsPerso[i].m_longueurTrajectoire;
@@ -265,6 +271,7 @@ int main(int argc, char *argv[])
                         packetDefaite << packetTypeOther << degatsInfliges;
                         socketPlayer1.send(packetVictoire);
                         socketPlayer2.send(packetDefaite);
+                        partieTerminee = true;
                     }
                 }
             }
@@ -272,7 +279,7 @@ int main(int argc, char *argv[])
             for (unsigned int i = 0; i < sortsVisuelsOther.size(); i++)
             {
                 SortVisuel sortVisu = sortsVisuelsOther[i];
-                if (std::sqrt((sortVisu.m_position.x-joueur1.m_position.x)*(sortVisu.m_position.x-joueur1.m_position.x)+(sortVisu.m_position.y-joueur1.m_position.y)*(sortVisu.m_position.y-joueur1.m_position.y)) < sortVisu.m_rayon+joueur1.m_rayon)
+                if ((std::sqrt((sortVisu.m_position.x-joueur1.m_position.x)*(sortVisu.m_position.x-joueur1.m_position.x)+(sortVisu.m_position.y-joueur1.m_position.y)*(sortVisu.m_position.y-joueur1.m_position.y)) < sortVisu.m_rayon+joueur1.m_rayon) && !partieTerminee)
                 {
                     std::cout << "TOUCHE" << std::endl;
                     sortsVisuelsOther[i].m_distanceParcourue = sortsVisuelsOther[i].m_longueurTrajectoire;
@@ -287,7 +294,6 @@ int main(int argc, char *argv[])
                         packetDegatsInfliges << packetType << degatsInfliges;
                         packetDegatsInfligesOther << packetTypeOther << degatsInfliges;
                         socketPlayer1.send(packetDegatsInfliges);
-                        std::cout << "Envoie d'information de douleur j1 à joueur 2" << std::endl;
                         socketPlayer2.send(packetDegatsInfligesOther);
                     }
                     else
@@ -301,6 +307,7 @@ int main(int argc, char *argv[])
                         packetDefaite << packetTypeOther << degatsInfliges;
                         socketPlayer2.send(packetVictoire);
                         socketPlayer1.send(packetDefaite);
+                        partieTerminee = true;
                     }
                 }
             }
@@ -310,7 +317,11 @@ int main(int argc, char *argv[])
             while (j < sortsVisuelsPerso.size())
             {
                 if (sortsVisuelsPerso[j].m_dureeVecue.getElapsedTime() >= sortsVisuelsPerso[j].m_dureeDeVie || sortsVisuelsPerso[j].m_distanceParcourue >= sortsVisuelsPerso[j].m_longueurTrajectoire)
+                {
+                    std::cout << "Temps écoulé : " << sortsVisuelsPerso[j].m_dureeVecue.getElapsedTime().asMilliseconds() << "/" << sortsVisuelsPerso[j].m_dureeDeVie.asMilliseconds() << std::endl;
+                    std::cout << "Distance parcourue : " << sortsVisuelsPerso[j].m_distanceParcourue << "/" << sortsVisuelsPerso[j].m_longueurTrajectoire << std::endl;
                     sortsVisuelsPerso.erase(sortsVisuelsPerso.begin()+j);
+                }
                 else
                     j++;
             }
@@ -319,17 +330,27 @@ int main(int argc, char *argv[])
             while (j < sortsVisuelsOther.size())
             {
                 if (sortsVisuelsOther[j].m_dureeVecue.getElapsedTime() >= sortsVisuelsOther[j].m_dureeDeVie || sortsVisuelsOther[j].m_distanceParcourue >= sortsVisuelsOther[j].m_longueurTrajectoire)
+                {
+                    std::cout << "Temps écoulé : " << sortsVisuelsOther[j].m_dureeVecue.getElapsedTime().asMilliseconds() << "/" << sortsVisuelsOther[j].m_dureeDeVie.asMilliseconds() << std::endl;
+                    std::cout << "Distance parcourue : " << sortsVisuelsOther[j].m_distanceParcourue << "/" << sortsVisuelsOther[j].m_longueurTrajectoire << std::endl;
                     sortsVisuelsOther.erase(sortsVisuelsOther.begin()+j);
+                }
                 else
                     j++;
             }
 
             // Déplacement des sorts
             for (unsigned int i = 0; i < sortsVisuelsPerso.size(); i++)
+            {
                 sortsVisuelsPerso[i].nextStep();
+                std::cout << "SortPerso(" << sortsVisuelsPerso[i].m_position.x << ", " << sortsVisuelsPerso[i].m_position.y << ") Perso(" << joueur1.m_position.x << ", " << joueur1.m_position.y << ") Other(" << joueur2.m_position.x << ", " << joueur2.m_position.y << ")" << std::endl;
+            }
 
             for (unsigned int i = 0; i < sortsVisuelsOther.size(); i++)
+            {
                 sortsVisuelsOther[i].nextStep();
+                std::cout << "SortOther(" << sortsVisuelsOther[i].m_position.x << ", " << sortsVisuelsOther[i].m_position.y << ") Perso(" << joueur1.m_position.x << ", " << joueur1.m_position.y << ") Other(" << joueur2.m_position.x << ", " << joueur2.m_position.y << ")" << std::endl;
+            }
         }
             //else
             //{

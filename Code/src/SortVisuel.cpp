@@ -4,7 +4,8 @@
 SortVisuel::SortVisuel() :
     m_textureIndex{0},
     m_degatsBase{1u},
-    m_position{0.0f, 0.0f, 0.0f}
+    m_position{0.0f, 0.0f, 0.0f},
+    m_distanceParcourue{0.0f}
 {
 
 }
