@@ -10,6 +10,7 @@
 #include "formes.hpp"
 #include "Sort.hpp"
 #include "SortVisuel.hpp"
+#include "TextVisuel.hpp"
 
 int main(int argc, char *argv[])
 {
@@ -125,6 +126,9 @@ int main(int argc, char *argv[])
 
     // Initialiser un vecteur de sorts à afficher
     std::vector<SortVisuel> sortsVisuels;
+
+    // Initialiser un vecteur de textes à afficher
+    std::vector<TextVisuel> textesVisuels;
 
 //    sortsVisuels.push_back({sf::Vector3f{1000.0f, 600.0f, 0.0f}, 1, texturesSortsVisuels, 16u, 5u, 0u, 400u, 3, 0, 0, 1, 0, sf::Time{sf::milliseconds(4000)}});
 //    sortsVisuels.push_back({sf::Vector3f{500.0f, 400.0f, 0.0f}, 2, texturesSortsVisuels, 16u, 7u, 0u, 500u, 2, 1, 128, 0, 1, sf::Time{sf::milliseconds(6000)}});
@@ -323,6 +327,13 @@ int main(int argc, char *argv[])
                 {
                     unsigned short degatsRecus;
                     packetReceived >> degatsRecus;
+                    sf::Text priseDeDegats;
+                    priseDeDegats.setFont(font);
+                    priseDeDegats.setColor(sf::Color(255,0,0,255));
+                    priseDeDegats.setPosition(perso.m_position.x-20, perso.m_position.y-35);
+                    priseDeDegats.setString("-" + std::to_string(degatsRecus));
+                    TextVisuel degatsPris{priseDeDegats};
+                    textesVisuels.push_back(degatsPris);
                     if (degatsRecus < perso.m_pvActuels)
                         perso.m_pvActuels -= degatsRecus;
                     else
@@ -335,6 +346,13 @@ int main(int argc, char *argv[])
                 {
                     unsigned short degatsRecus;
                     packetReceived >> degatsRecus;
+                    sf::Text priseDeDegats;
+                    priseDeDegats.setFont(font);
+                    priseDeDegats.setColor(sf::Color(255,0,0,255));
+                    priseDeDegats.setPosition(other.m_position.x-20, other.m_position.y-35);
+                    priseDeDegats.setString("-" + std::to_string(degatsRecus));
+                    TextVisuel degatsPris{priseDeDegats};
+                    textesVisuels.push_back(degatsPris);
                     if (degatsRecus < other.m_pvActuels)
                         other.m_pvActuels -= degatsRecus;
                     else
@@ -565,6 +583,21 @@ int main(int argc, char *argv[])
             sortsIcons[i].m_spriteSort.setPosition(perso.getOrigin() - sf::Vector2f{392.0f,232.0f-32.0f*i});
         }
 
+        // Retrait des textes visuels ayant fait leur temps
+        j = 0;
+        while (j < textesVisuels.size())
+        {
+
+            if (textesVisuels[j].m_clock.getElapsedTime() >= textesVisuels[j].m_dureeDeVie)
+                textesVisuels.erase(textesVisuels.begin()+j);
+            else
+                j++;
+        }
+
+        // Deplacement des textes visuels
+        for (unsigned int i = 0; i < textesVisuels.size(); i++)
+            textesVisuels[i].nextStep();
+
         // Deplacement du personnage
         perso.networkOrientedNextStep();
         other.networkOrientedNextStep();
@@ -600,6 +633,10 @@ int main(int argc, char *argv[])
 
         for (unsigned int i = 0; i < cooldowns.size(); i++)
             window.draw(cooldowns[i]);
+
+        // Affichage des textes
+        for (unsigned int i = 0; i < textesVisuels.size(); i++)
+            window.draw(textesVisuels[i]);
 
         window.draw(other);
         window.draw(perso);
