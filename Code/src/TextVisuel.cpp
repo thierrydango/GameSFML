@@ -1,5 +1,6 @@
 #include "TextVisuel.hpp"
 #include <iostream>
+#include<cmath>
 
 TextVisuel::TextVisuel()
 {
