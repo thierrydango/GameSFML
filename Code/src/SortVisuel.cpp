@@ -1,5 +1,7 @@
 #include <iostream>
+#include <cmath>
 #include "SortVisuel.hpp"
+
 
 SortVisuel::SortVisuel() :
     m_textureIndex{0},

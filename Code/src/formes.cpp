@@ -1,4 +1,5 @@
 #include "formes.hpp"
+#include <cmath>
 
 sf::RectangleShape defineRectangle(int posX, int posY, unsigned int longueur, unsigned int largeur, int origX, int origY, sf::Color fillColor, unsigned int outlineThickness, sf::Color outlineColor, int initialAngle)
 {
